@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Libro</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Editar Libro</h2>
+        <form th:action="@{/libros/actualizar/{id}(id=${libro.id})}" th:object="${libro}" method="post">
+            <input type="hidden" th:field="*{id}">
+            
+            <div class="form-group">
+                <label for="titulo">Título</label>
+                <input type="text" id="titulo" th:field="*{titulo}" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="autores">Autor(es)</label>
+                <select id="autores" th:field="*{autores}" class="form-control" multiple="multiple" required>
+                    <option th:each="autor : ${autores}"
+                            th:value="${autor.id}"
+                            th:text="${autor.nombreCompleto}"
+                            th:selected="${#lists.contains(libro.autores, autor)}">
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="categoria">Categoría</label>
+                <select id="categoria" th:field="*{categoria}" class="form-control" required>
+                    <option th:each="categoria : ${categorias}"
+                            th:value="${categoria.id}"
+                            th:text="${categoria.nombre}"
+                            th:selected="${libro.categoria != null and libro.categoria.id == categoria.id}">
+                    </option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="anioPublicacion">Año de Publicación</label>
+                <input type="number" id="anioPublicacion" th:field="*{anioPublicacion}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="isbn">ISBN</label>
+                <input type="text" id="isbn" th:field="*{isbn}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            <a href="/libros" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html>

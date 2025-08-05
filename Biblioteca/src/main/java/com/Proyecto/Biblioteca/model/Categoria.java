@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -19,5 +21,6 @@ public class Categoria {
 
     // Relación 1-N con Libro
     @OneToMany(mappedBy = "categoria")
+    @JsonIgnore
     private Set<Libro> libros;
 }

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Libros</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+        <h1>Catálogo de Libros</h1>
+
+        <a th:href="@{/libros/crear}" class="btn btn-success mb-3">Crear Nuevo Libro</a>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Autor(es)</th>
+                    <th>Categoría</th>
+                    <th>Año de Publicación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="libro : ${libros}">
+                    <td th:text="${libro.id}"></td>
+                    <td th:text="${libro.titulo}"></td>
+                    <td>
+                        <span th:each="autor, iterStat : ${libro.autores}">
+                            <span th:text="${autor.nombreCompleto}"></span>
+                            <span th:if="${!iterStat.last}">, </span>
+                        </span>
+                    </td>
+                    <td th:text="${libro.categoria?.nombre}"></td>
+                    <td th:text="${libro.anioPublicacion}"></td>
+                    <td>
+                        <a th:href="@{/libros/editar/{id}(id=${libro.id})}" class="btn btn-warning btn-sm">Editar</a>
+                        <a th:href="@{/libros/eliminar/{id}(id=${libro.id})}" class="btn btn-danger btn-sm">Eliminar</a>
+                        <a th:href="@{/libros/crear-ejemplar/{id}(id=${libro.id})}" class="btn btn-primary btn-sm">Crear Ejemplar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

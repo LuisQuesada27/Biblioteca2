@@ -1,35 +1,83 @@
 package com.Proyecto.Biblioteca.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.util.Set;
+import java.util.List;
 
-@Data
-@NoArgsConstructor
 @Entity
 public class Libro {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String titulo;
-    private String isbn;
     private Integer anioPublicacion;
+    private String isbn;
     private String descripcion;
 
-    // Relación N-N con Autor
-    @ManyToMany
-    @JoinTable(
-        name = "libro_autor",
-        joinColumns = @JoinColumn(name = "libro_id"),
-        inverseJoinColumns = @JoinColumn(name = "autor_id")
-    )
-    private Set<Autor> autores;
+    @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL)
+    private List<Ejemplar> ejemplares;
 
-    // Relación N-1 con Categoria
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_id")
+
+    @ManyToOne
     private Categoria categoria;
+
+    @ManyToMany
+    private List<Autor> autores;
+
+    // Getters y Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public Integer getAnioPublicacion() {
+        return anioPublicacion;
+    }
+
+    public void setAnioPublicacion(Integer anioPublicacion) {
+        this.anioPublicacion = anioPublicacion;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public List<Autor> getAutores() {
+        return autores;
+    }
+
+    public void setAutores(List<Autor> autores) {
+        this.autores = autores;
+    }
 }

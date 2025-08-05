@@ -1,68 +1,122 @@
 package com.Proyecto.Biblioteca.controller;
 
+
+import com.Proyecto.Biblioteca.model.Ejemplar;
 import com.Proyecto.Biblioteca.model.Libro;
+import com.Proyecto.Biblioteca.repository.AutorRepository;
+import com.Proyecto.Biblioteca.repository.CategoriaRepository;
+import com.Proyecto.Biblioteca.repository.EjemplarRepository;
 import com.Proyecto.Biblioteca.repository.LibroRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.stream.Collectors;
 
-@RestController
-@RequestMapping("/api/libros")
+@Controller
 public class LibroController {
 
-    @Autowired
-    private LibroRepository libroRepository;
+    private final LibroRepository libroRepository;
+    private final AutorRepository autorRepository;
+    private final CategoriaRepository categoriaRepository;
+    private final EjemplarRepository ejemplarRepository; // <-- Nuevo repositorio inyectado
 
-    @GetMapping
-    public List<Libro> getAllLibros() {
-        return libroRepository.findAll();
+    public LibroController(LibroRepository libroRepository, AutorRepository autorRepository, CategoriaRepository categoriaRepository, EjemplarRepository ejemplarRepository) {
+        this.libroRepository = libroRepository;
+        this.autorRepository = autorRepository;
+        this.categoriaRepository = categoriaRepository;
+        this.ejemplarRepository = ejemplarRepository; // <-- Asignación del nuevo repositorio
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Libro> getLibroById(@PathVariable Long id) {
-        Optional<Libro> libro = libroRepository.findById(id);
-        return libro.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                    .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    // Muestra la lista de libros
+    @GetMapping("/libros")
+    public String listarLibros(Model model) {
+        model.addAttribute("libros", libroRepository.findAll());
+        return "lista-libros";
     }
 
-    @PostMapping
-    public ResponseEntity<Libro> createLibro(@RequestBody Libro libro) {
-        Libro newLibro = libroRepository.save(libro);
-        return new ResponseEntity<>(newLibro, HttpStatus.CREATED);
+    // Muestra el formulario para crear un nuevo libro
+    @GetMapping("/libros/crear")
+    public String mostrarFormularioCreacion(Model model) {
+        model.addAttribute("libro", new Libro());
+        model.addAttribute("autores", autorRepository.findAll());
+        model.addAttribute("categorias", categoriaRepository.findAll());
+        return "libro-form";
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Libro> updateLibro(@PathVariable Long id, @RequestBody Libro libroDetails) {
-        Optional<Libro> optionalLibro = libroRepository.findById(id);
-        if (optionalLibro.isPresent()) {
-            Libro existingLibro = optionalLibro.get();
-            existingLibro.setTitulo(libroDetails.getTitulo());
-            existingLibro.setAnioPublicacion(libroDetails.getAnioPublicacion());
-            existingLibro.setIsbn(libroDetails.getIsbn());
-            existingLibro.setDescripcion(libroDetails.getDescripcion());
-            
-            // Aquí se deberían manejar las relaciones con Autor y Categoría
-            // existingLibro.setAutores(libroDetails.getAutores());
-            // existingLibro.setCategoria(libroDetails.getCategoria());
-
-            Libro updatedLibro = libroRepository.save(existingLibro);
-            return new ResponseEntity<>(updatedLibro, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    // Maneja la petición POST para guardar un libro
+    @PostMapping("/libros/crear")
+    public String guardarLibro(@ModelAttribute Libro libro, RedirectAttributes redirectAttributes) {
+        // Busca y asigna los autores y la categoría completos antes de guardar
+        if (libro.getAutores() != null) {
+            libro.setAutores(libro.getAutores().stream()
+                    .map(autor -> autorRepository.findById(autor.getId()).orElse(null))
+                    .collect(Collectors.toList()));
         }
+        if (libro.getCategoria() != null && libro.getCategoria().getId() != null) {
+            libro.setCategoria(categoriaRepository.findById(libro.getCategoria().getId()).orElse(null));
+        }
+
+        libroRepository.save(libro);
+        redirectAttributes.addFlashAttribute("mensaje", "Libro creado exitosamente.");
+        return "redirect:/libros";
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteLibro(@PathVariable Long id) {
-        try {
-            libroRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    // Muestra el formulario para editar un libro existente
+    @GetMapping("/libros/editar/{id}")
+    public String mostrarFormularioEdicion(@PathVariable("id") Long id, Model model) {
+        Libro libro = libroRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("ID de libro no válido:" + id));
+
+        model.addAttribute("libro", libro);
+        model.addAttribute("autores", autorRepository.findAll());
+        model.addAttribute("categorias", categoriaRepository.findAll());
+        return "libro-form-edicion";
+    }
+
+    // Maneja la petición POST para actualizar un libro
+    @PostMapping("/libros/actualizar/{id}")
+    public String actualizarLibro(@PathVariable("id") Long id, @ModelAttribute Libro libro) {
+        libro.setId(id);
+
+        // Asegúrate de buscar los objetos completos de Autor y Categoria antes de guardar
+        if (libro.getAutores() != null) {
+            libro.setAutores(libro.getAutores().stream()
+                    .map(autor -> autorRepository.findById(autor.getId()).orElse(null))
+                    .collect(Collectors.toList()));
         }
+        if (libro.getCategoria() != null && libro.getCategoria().getId() != null) {
+            libro.setCategoria(categoriaRepository.findById(libro.getCategoria().getId()).orElse(null));
+        }
+
+        libroRepository.save(libro);
+        return "redirect:/libros";
+    }
+
+    // Maneja la petición GET para eliminar un libro
+    @GetMapping("/libros/eliminar/{id}")
+    public String eliminarLibro(@PathVariable("id") Long id) {
+        libroRepository.deleteById(id);
+        return "redirect:/libros";
+    }
+
+    // --- NUEVO MÉTODO PARA CREAR EJEMPLARES ---
+
+    // Añade un nuevo ejemplar a un libro existente
+    @Transactional
+    @GetMapping("/libros/crear-ejemplar/{libroId}")
+    public String crearEjemplar(@PathVariable("libroId") Long libroId, RedirectAttributes redirectAttributes) {
+        Libro libro = libroRepository.findById(libroId)
+                .orElseThrow(() -> new IllegalArgumentException("ID de libro no válido:" + libroId));
+
+        Ejemplar ejemplar = new Ejemplar();
+        ejemplar.setLibro(libro);
+        ejemplar.setEstado("Disponible");
+        ejemplarRepository.save(ejemplar);
+
+        redirectAttributes.addFlashAttribute("mensaje", "Ejemplar del libro '" + libro.getTitulo() + "' creado exitosamente.");
+        return "redirect:/libros";
     }
 }

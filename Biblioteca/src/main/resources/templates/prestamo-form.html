@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Préstamo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Crear Préstamo</h2>
+        <form th:action="@{/prestamos/guardar}" th:object="${prestamo}" method="post">
+            
+            <div class="form-group">
+                <label for="libro">Libro</label>
+                <select id="libro" class="form-control" required>
+                    <option value="">Seleccione un libro</option>
+                    <option th:each="libro : ${libros}" th:value="${libro.id}" th:text="${libro.titulo}"></option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="ejemplar">Ejemplar Disponible</label>
+                <select id="ejemplar" th:field="*{ejemplar.id}" class="form-control" required>
+                    <option value="">Seleccione un ejemplar</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="usuario">Usuario</label>
+                <select id="usuario" th:field="*{usuario.id}" class="form-control" required>
+                    <option value="">Seleccione un usuario</option>
+                    <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.username}"></option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Registrar Préstamo</button>
+            <a href="/prestamos/listar" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+    $(document).ready(function() {
+        $('#libro').change(function() {
+            var libroId = $(this).val();
+            var ejemplarSelect = $('#ejemplar');
+            ejemplarSelect.empty();
+            ejemplarSelect.append($('<option>', {
+                value: '',
+                text: 'Cargando...'
+            }));
+
+            if (libroId) {
+                // Para depurar, ahora se mostrará en la consola si funciona
+                console.log("Haciendo llamada para el libro con ID:", libroId);
+                
+                $.get('/prestamos/ejemplares-disponibles/' + libroId, function(data) {
+                    console.log("Datos recibidos:", data); // Verás los datos aquí si la llamada tiene éxito
+                    
+                    ejemplarSelect.empty();
+                    ejemplarSelect.append($('<option>', {
+                        value: '',
+                        text: 'Seleccione un ejemplar'
+                    }));
+                    if (data.length > 0) {
+                        $.each(data, function(index, ejemplar) {
+                            ejemplarSelect.append($('<option>', {
+                                value: ejemplar.id,
+                                text: 'ID Ejemplar: ' + ejemplar.id
+                            }));
+                        });
+                    } else {
+                         ejemplarSelect.append($('<option>', {
+                            value: '',
+                            text: 'No hay ejemplares disponibles'
+                        }));
+                    }
+                }).fail(function() {
+                    console.error("Error al cargar ejemplares."); // Verás este error si la llamada falla
+                    ejemplarSelect.empty();
+                    ejemplarSelect.append($('<option>', {
+                        value: '',
+                        text: 'Error al cargar ejemplares'
+                    }));
+                });
+            } else {
+                ejemplarSelect.empty();
+                ejemplarSelect.append($('<option>', {
+                    value: '',
+                    text: 'Seleccione un ejemplar'
+                }));
+            }
+        });
+    });
+    </script>
+</body>
+</html>
