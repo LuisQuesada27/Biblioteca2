@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Catálogo de Libros</title>
@@ -9,19 +9,21 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
     <div class="container mt-4">
-        <h1>Catálogo de Libros</h1>
+       <h1>Catálogo de Libros</h1>
 
-        <a th:href="@{/libros/crear}" class="btn btn-success mb-3">Crear Nuevo Libro</a>
+             <div sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/libros/crear}" class="btn btn-success mb-3">Crear Nuevo Libro</a>
+          </div>
 
         <table class="table table-striped">
-            <thead>
-                <tr>
+           <thead>
+               <tr>
                     <th>ID</th>
                     <th>Título</th>
-                    <th>Autor(es)</th>
-                    <th>Categoría</th>
+                     <th>Autor(es)</th>
+                     <th>Categoría</th>
                     <th>Año de Publicación</th>
-                    <th>Acciones</th>
+                    <th sec:authorize="hasRole('ADMIN')">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,13 +38,13 @@
                     </td>
                     <td th:text="${libro.categoria?.nombre}"></td>
                     <td th:text="${libro.anioPublicacion}"></td>
-                    <td>
+                                    <td sec:authorize="hasRole('ADMIN')">
                         <a th:href="@{/libros/editar/{id}(id=${libro.id})}" class="btn btn-warning btn-sm">Editar</a>
                         <a th:href="@{/libros/eliminar/{id}(id=${libro.id})}" class="btn btn-danger btn-sm">Eliminar</a>
                         <a th:href="@{/libros/crear-ejemplar/{id}(id=${libro.id})}" class="btn btn-primary btn-sm">Crear Ejemplar</a>
                     </td>
                 </tr>
-            </tbody>
+           </tbody>
         </table>
     </div>
 </body>

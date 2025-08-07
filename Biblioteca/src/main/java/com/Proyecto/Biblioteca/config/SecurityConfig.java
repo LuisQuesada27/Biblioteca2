@@ -3,6 +3,8 @@ package com.Proyecto.Biblioteca.config;
 import com.Proyecto.Biblioteca.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -26,26 +28,42 @@ public class SecurityConfig {
     }
 
     @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/admin/**").hasRole("ADMIN")
-            .requestMatchers("/user/**").hasAnyRole("ADMIN", "USER")
-            .requestMatchers("/api/public/**", "/h2-console/**", "/registro", "/css/**", "/js/**").permitAll()
-            .anyRequest().authenticated()
-        )
-        .formLogin(form -> form
-            .loginPage("/login").permitAll()
-        )
-        .logout(logout -> logout
-            .permitAll()
-        );
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy("ADMIN > USER");
+        return roleHierarchy;
+    }
+    
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(authorize -> authorize
+                // Reglas para el ADMIN
+                .requestMatchers("/admin/**", "/h2-console/**").hasRole("ADMIN")
+                .requestMatchers("/libros/crear", "/libros/editar/**", "/libros/eliminar/**").hasRole("ADMIN")
+                .requestMatchers("/autores/crear", "/autores/editar/**", "/autores/eliminar/**").hasRole("ADMIN")
+                
+                // Reglas para USER y ADMIN
+                .requestMatchers("/user/**", "/prestamos/**").hasAnyRole("ADMIN", "USER")
+                
+                // Reglas para todos (públicas)
+                .requestMatchers("/", "/libros", "/login", "/registro").permitAll()
 
-    http.csrf(csrf -> csrf.disable());
-    http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
+                // Todas las demás peticiones requieren autenticación
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login").permitAll()
+            )
+            .logout(logout -> logout
+                .permitAll()
+            );
 
-    return http.build();
-}
+        http.csrf(csrf -> csrf.disable());
+        http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
+
+        return http.build();
+    }
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
