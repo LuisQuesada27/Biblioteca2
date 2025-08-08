@@ -35,7 +35,7 @@
                         <span th:if="${prestamo.fechaDevolucion != null}" class="badge badge-success">Devuelto</span>
                     </td>
                     <td>
-                        <form th:action="@{/prestamos/devolver/{id}(id=${prestamo.id})}" method="post">
+                        <form th:if="${prestamo.fechaDevolucion == null}" th:action="@{/prestamos/devolver/{id}(id=${prestamo.id})}" method="post">
                            <button type="submit" class="btn btn-info btn-sm">Devolver</button>
                         </form>
                     </td>

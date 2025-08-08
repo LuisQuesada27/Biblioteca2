@@ -2,6 +2,7 @@ package com.Proyecto.Biblioteca.controller;
 
 
 import com.Proyecto.Biblioteca.model.Ejemplar;
+import com.Proyecto.Biblioteca.model.EstadoEjemplar;
 import com.Proyecto.Biblioteca.model.Libro;
 import com.Proyecto.Biblioteca.repository.AutorRepository;
 import com.Proyecto.Biblioteca.repository.CategoriaRepository;
@@ -113,7 +114,7 @@ public class LibroController {
 
         Ejemplar ejemplar = new Ejemplar();
         ejemplar.setLibro(libro);
-        ejemplar.setEstado("Disponible");
+        ejemplar.setEstado(EstadoEjemplar.DISPONIBLE);
         ejemplarRepository.save(ejemplar);
 
         redirectAttributes.addFlashAttribute("mensaje", "Ejemplar del libro '" + libro.getTitulo() + "' creado exitosamente.");

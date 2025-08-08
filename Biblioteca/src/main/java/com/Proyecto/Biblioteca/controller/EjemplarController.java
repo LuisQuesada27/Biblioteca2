@@ -1,6 +1,7 @@
 package com.Proyecto.Biblioteca.controller;
 
 import com.Proyecto.Biblioteca.model.Ejemplar;
+import com.Proyecto.Biblioteca.model.EstadoEjemplar;
 import com.Proyecto.Biblioteca.repository.EjemplarRepository;
 import com.Proyecto.Biblioteca.repository.LibroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class EjemplarController {
             .map(libro -> {
                 Ejemplar nuevoEjemplar = new Ejemplar();
                 nuevoEjemplar.setLibro(libro);
-                nuevoEjemplar.setEstado("Disponible"); // Estado inicial del ejemplar
+                nuevoEjemplar.setEstado(EstadoEjemplar.DISPONIBLE); // Estado inicial del ejemplar
                 ejemplarRepository.save(nuevoEjemplar);
                 return ResponseEntity.ok(nuevoEjemplar);
             })

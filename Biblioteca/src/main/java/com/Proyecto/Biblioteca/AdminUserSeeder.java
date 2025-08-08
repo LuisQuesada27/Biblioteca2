@@ -1,17 +1,13 @@
 package com.Proyecto.Biblioteca;
 
-import com.Proyecto.Biblioteca.model.Autor;
-import com.Proyecto.Biblioteca.model.Categoria;
-import com.Proyecto.Biblioteca.model.Usuario;
-import com.Proyecto.Biblioteca.model.Role;
-import com.Proyecto.Biblioteca.repository.AutorRepository;
-import com.Proyecto.Biblioteca.repository.CategoriaRepository;
-import com.Proyecto.Biblioteca.repository.UsuarioRepository;
+import com.Proyecto.Biblioteca.model.*;
+import com.Proyecto.Biblioteca.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
+import java.time.LocalDate;
 import java.util.Optional;
+import java.util.List;
 
 @Component
 public class AdminUserSeeder implements CommandLineRunner {
@@ -20,19 +16,26 @@ public class AdminUserSeeder implements CommandLineRunner {
     private final AutorRepository autorRepository;
     private final CategoriaRepository categoriaRepository;
     private final PasswordEncoder passwordEncoder;
+    private final LibroRepository libroRepository;
+    private final EjemplarRepository ejemplarRepository;
+    private final PrestamoRepository prestamoRepository;
 
-    public AdminUserSeeder(UsuarioRepository usuarioRepository, AutorRepository autorRepository, CategoriaRepository categoriaRepository, PasswordEncoder passwordEncoder) {
+    public AdminUserSeeder(UsuarioRepository usuarioRepository, AutorRepository autorRepository, CategoriaRepository categoriaRepository, PasswordEncoder passwordEncoder, LibroRepository libroRepository, EjemplarRepository ejemplarRepository, PrestamoRepository prestamoRepository) {
         this.usuarioRepository = usuarioRepository;
         this.autorRepository = autorRepository;
         this.categoriaRepository = categoriaRepository;
         this.passwordEncoder = passwordEncoder;
+        this.libroRepository = libroRepository;
+        this.ejemplarRepository = ejemplarRepository;
+        this.prestamoRepository = prestamoRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
         crearAdminPorDefecto();
-        crearUserPorDefecto(); // <-- ¡Añade esta línea!
+        crearUserPorDefecto();
         crearDatosDePrueba();
+        crearDatosDePrestamo();
     }
 
     private void crearAdminPorDefecto() {
@@ -52,7 +55,6 @@ public class AdminUserSeeder implements CommandLineRunner {
         }
     }
 
-    // --- Nuevo método para crear el usuario USER por defecto ---
     private void crearUserPorDefecto() {
         Optional<Usuario> userOptional = usuarioRepository.findByUsername("user");
 
@@ -84,6 +86,56 @@ public class AdminUserSeeder implements CommandLineRunner {
             categoria.setDescripcion("Género que incluye elementos sobrenaturales o mágicos.");
             categoriaRepository.save(categoria);
             System.out.println("-----> Categoría por defecto creada.");
+        }
+    }
+
+    private void crearDatosDePrestamo() {
+        if (libroRepository.count() == 0) {
+            // Crear Autores
+            Autor autor1 = new Autor();
+            autor1.setNombreCompleto("Gabriel García Márquez");
+            autorRepository.save(autor1);
+            
+            Autor autor2 = new Autor();
+            autor2.setNombreCompleto("J.R.R. Tolkien");
+            autorRepository.save(autor2);
+
+            // Crear Libros usando el constructor corregido
+            Libro libro1 = new Libro("Cien años de soledad", 1967, List.of(autor1));
+            Libro libro2 = new Libro("El Señor de los Anillos", 1954, List.of(autor2));
+            libroRepository.save(libro1);
+            libroRepository.save(libro2);
+
+            // Creación de Ejemplares
+            Ejemplar ejemplar1 = new Ejemplar(libro1, EstadoEjemplar.PRESTADO);
+            Ejemplar ejemplar2 = new Ejemplar(libro2, EstadoEjemplar.DISPONIBLE);
+            Ejemplar ejemplar3 = new Ejemplar(libro1, EstadoEjemplar.PRESTADO);
+            ejemplarRepository.save(ejemplar1);
+            ejemplarRepository.save(ejemplar2);
+            ejemplarRepository.save(ejemplar3);
+
+            // Creación de Usuarios (obteniendo los que ya existen)
+            Usuario usuario1 = usuarioRepository.findByUsername("user").orElseThrow();
+            Usuario usuario2 = usuarioRepository.findByUsername("admin").orElseThrow();
+
+            // Préstamo Atrasado
+            Prestamo prestamoAtrasado = new Prestamo();
+            prestamoAtrasado.setUsuario(usuario1);
+            prestamoAtrasado.setEjemplar(ejemplar1);
+            prestamoAtrasado.setFechaPrestamo(LocalDate.now().minusDays(20));
+            prestamoAtrasado.setFechaVencimiento(LocalDate.now().minusDays(5));
+            prestamoRepository.save(prestamoAtrasado);
+
+            // Préstamo con Multa
+            Prestamo prestamoConMulta = new Prestamo();
+            prestamoConMulta.setUsuario(usuario2);
+            prestamoConMulta.setEjemplar(ejemplar3);
+            prestamoConMulta.setFechaPrestamo(LocalDate.now().minusDays(20));
+            prestamoConMulta.setFechaVencimiento(LocalDate.now().minusDays(10));
+            prestamoConMulta.setFechaDevolucion(LocalDate.now().minusDays(5));
+            long diasAtraso = prestamoConMulta.getFechaVencimiento().until(prestamoConMulta.getFechaDevolucion()).getDays();
+            prestamoConMulta.setMultaGenerada(diasAtraso * 0.5);
+            prestamoRepository.save(prestamoConMulta);
         }
     }
 }

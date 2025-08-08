@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Multas Generadas</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Reporte de Multas Generadas</h2>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Libro</th>
+                    <th>Usuario</th>
+                    <th>Fecha Devolución</th>
+                    <th>Multa Generada</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="prestamo : ${multasGeneradas}">
+                    <td th:text="${prestamo.ejemplar?.libro?.titulo}"></td>
+                    <td th:text="${prestamo.usuario?.username}"></td>
+                    <td th:if="${prestamo.fechaDevolucion != null}" th:text="${#temporals.format(prestamo.fechaDevolucion, 'dd-MM-yyyy')}"></td>
+                    <td th:if="${prestamo.fechaDevolucion == null}">-</td>
+                    <td th:text="${#numbers.formatCurrency(prestamo.multaGenerada)}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="/" class="btn btn-secondary">Volver al inicio</a>
+    </div>
+</body>
+</html>

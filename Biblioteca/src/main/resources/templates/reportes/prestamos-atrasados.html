@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Préstamos Atrasados</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Reporte de Préstamos Atrasados</h2>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Libro</th>
+                    <th>Ejemplar ID</th>
+                    <th>Usuario</th>
+                    <th>Fecha Vencimiento</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="prestamo : ${prestamosAtrasados}">
+                    <td th:text="${prestamo.ejemplar?.libro?.titulo}"></td>
+                    <td th:text="${prestamo.ejemplar?.id}"></td>
+                    <td th:text="${prestamo.usuario?.username}"></td>
+                    <td th:text="${#temporals.format(prestamo.fechaVencimiento, 'dd-MM-yyyy')}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="/" class="btn btn-secondary">Volver al inicio</a>
+    </div>
+</body>
+</html>

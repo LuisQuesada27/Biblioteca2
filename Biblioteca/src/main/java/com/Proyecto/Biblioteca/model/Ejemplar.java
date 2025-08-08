@@ -9,20 +9,29 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Entity
+@Table(name = "ejemplares")
 public class Ejemplar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Relación ManyToOne con Libro
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "libro_id")
     private Libro libro;
 
-    private String estado;
+    // Usamos un enum para el estado para garantizar valores válidos
+    @Enumerated(EnumType.STRING)
+    private EstadoEjemplar estado;
     
-    // Relación 1-N con Prestamo
+    // Relación OneToMany con Prestamo
     @OneToMany(mappedBy = "ejemplar")
-    @JsonIgnore // <-- AÑADE ESTA LÍNEA
+    @JsonIgnore
+    
     private List<Prestamo> prestamos;
+    public Ejemplar(Libro libro, EstadoEjemplar estado) {
+    this.libro = libro;
+    this.estado = estado;
+}
 }
