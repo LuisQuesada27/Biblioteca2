@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -75,22 +76,72 @@ public class AdminUserSeeder implements CommandLineRunner {
 
     //Esto garantiza que siempre haya datos básicos, como un autor y una categoría.
     private void crearDatosDePrueba() {
-        if (autorRepository.count() == 0) {
-            Autor autor = new Autor();
-            autor.setNombreCompleto("J.R.R. Tolkien");
-            autor.setPaisOrigen("Sudáfrica");
-            autorRepository.save(autor);
-            System.out.println("Autor por defecto creado.");
-        }
+    // Si no hay autores, los creamos
+    if (autorRepository.count() == 0) {
+        List<Autor> autores = new ArrayList<>();
+        
+        Autor autor1 = new Autor();
+        autor1.setNombreCompleto("J.R.R. Tolkien");
+        autor1.setPaisOrigen("Sudáfrica");
+        autores.add(autor1);
 
-        if (categoriaRepository.count() == 0) {
-            Categoria categoria = new Categoria();
-            categoria.setNombre("Fantasía");
-            categoria.setDescripcion("Género que incluye elementos sobrenaturales o mágicos.");
-            categoriaRepository.save(categoria);
-            System.out.println("Categoría por defecto creada.");
-        }
+        Autor autor2 = new Autor();
+        autor2.setNombreCompleto("Isaac Asimov");
+        autor2.setPaisOrigen("Rusia");
+        autores.add(autor2);
+
+        Autor autor3 = new Autor();
+        autor3.setNombreCompleto("Stephen King");
+        autor3.setPaisOrigen("Estados Unidos");
+        autores.add(autor3);
+
+        Autor autor4 = new Autor();
+        autor4.setNombreCompleto("Gabriel García Márquez");
+        autor4.setPaisOrigen("Colombia");
+        autores.add(autor4);
+
+        Autor autor5 = new Autor();
+        autor5.setNombreCompleto("Jane Austen");
+        autor5.setPaisOrigen("Reino Unido");
+        autores.add(autor5);
+        
+        autorRepository.saveAll(autores);
+        System.out.println("Autores por defecto creados.");
     }
+
+    // Si no hay categorías, las creamos
+    if (categoriaRepository.count() == 0) {
+        List<Categoria> categorias = new ArrayList<>();
+
+        Categoria categoria1 = new Categoria();
+        categoria1.setNombre("Fantasía");
+        categoria1.setDescripcion("Género que incluye elementos sobrenaturales o mágicos.");
+        categorias.add(categoria1);
+        
+        Categoria categoria2 = new Categoria();
+        categoria2.setNombre("Ciencia Ficción");
+        categoria2.setDescripcion("Género basado en futuros tecnológicos y descubrimientos científicos.");
+        categorias.add(categoria2);
+        
+        Categoria categoria3 = new Categoria();
+        categoria3.setNombre("Misterio");
+        categoria3.setDescripcion("Género centrado en la resolución de crímenes o acertijos.");
+        categorias.add(categoria3);
+        
+        Categoria categoria4 = new Categoria();
+        categoria4.setNombre("Biografía");
+        categoria4.setDescripcion("Narración de la vida de una persona real.");
+        categorias.add(categoria4);
+        
+        Categoria categoria5 = new Categoria();
+        categoria5.setNombre("Historia");
+        categoria5.setDescripcion("Género que relata eventos históricos reales.");
+        categorias.add(categoria5);
+
+        categoriaRepository.saveAll(categorias);
+        System.out.println("Categorías por defecto creadas.");
+    }
+}
 
     private void crearDatosDePrestamo() {
         if (libroRepository.count() == 0) {

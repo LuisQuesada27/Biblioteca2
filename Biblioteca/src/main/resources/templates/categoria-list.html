@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Categorías - Biblioteca Digital</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Fauna+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5d4a36;  /* Café oscuro principal */
+            --secondary-color: #8b6b47;  /* Café medio */
+            --light-bg: #fffdf7;  /* Fondo claro beige */
+            --text-color: #3a3226;  /* Texto café oscuro */
+            --border-color: #d4c9b1;  /* Borde beige */
+            --warning-color: #b38a58;  /* Color para botones de edición */
+        }
+        
+        body {
+            background-color: #f5f1e6;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: 'Fauna One', serif;
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        
+        .categories-container {
+            background-color: rgba(255, 253, 247, 0.97);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(58, 50, 38, 0.3);
+            padding: 2.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            border-top: 8px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .categories-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background-color: var(--secondary-color);
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            opacity: 0.8;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 2.3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--secondary-color), transparent);
+        }
+        
+        .table {
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(58, 50, 38, 0.1);
+            margin-top: 1.5rem;
+        }
+        
+        .table thead th {
+            background-color: var(--primary-color);
+            color: white;
+            font-family: 'Cinzel', serif;
+            font-weight: 400;
+            border: none;
+            padding: 15px;
+        }
+        
+        .table tbody td {
+            background-color: var(--light-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+        
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .table tbody tr:hover td {
+            background-color: #f0e9d9;
+        }
+        
+        .btn-create {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            font-family: 'Cinzel', serif;
+            padding: 8px 20px;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-create:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-edit {
+            background-color: var(--warning-color);
+            border-color: var(--warning-color);
+            color: white;
+            font-family: 'Fauna One', serif;
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit:hover {
+            background-color: #c99a6a;
+            border-color: #c99a6a;
+            color: white;
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+        
+        .categories-icon {
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .action-cell {
+            white-space: nowrap;
+            text-align: center;
+        }
+        
+        .alert-success {
+            background-color: rgba(139, 107, 71, 0.2);
+            border-color: var(--secondary-color);
+            color: var(--text-color);
+            font-family: 'Fauna One', serif;
+        }
+        
+        .descripcion-cell {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container">
+        <div class="categories-container">
+            <div class="categories-icon">🏷️</div>
+            <h2>Lista de Categorías</h2>
+            
+            <div th:if="${mensaje}" class="alert alert-success" role="alert" th:text="${mensaje}"></div>
+            
+            <a th:href="@{/categorias/crear}" class="btn btn-create">
+                <i>➕</i> Crear Nueva Categoría
+            </a>
+            
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th class="action-cell">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="categoria : ${categorias}">
+                            <td th:text="${categoria.id}">1</td>
+                            <td th:text="${categoria.nombre}">Categoría Ejemplo</td>
+                            <td class="descripcion-cell" th:text="${categoria.descripcion}">Descripción de ejemplo que podría ser larga</td>
+                            <td class="action-cell">
+                                <a th:href="@{/categorias/editar/{id}(id=${categoria.id})}" class="btn btn-edit">
+                                    <i>✏️</i> Editar
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

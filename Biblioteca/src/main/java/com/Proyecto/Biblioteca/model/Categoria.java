@@ -3,13 +3,12 @@ package com.Proyecto.Biblioteca.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @Entity
+@Table(name = "categorias")
 public class Categoria {
 
     @Id
@@ -18,9 +17,7 @@ public class Categoria {
 
     private String nombre;
     private String descripcion;
-
-    // Relación 1-N con Libro
-    @OneToMany(mappedBy = "categoria")
-    @JsonIgnore
-    private Set<Libro> libros;
+    
+    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Libro> libros;
 }

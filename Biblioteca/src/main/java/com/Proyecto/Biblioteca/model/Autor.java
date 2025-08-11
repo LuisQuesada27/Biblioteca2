@@ -8,6 +8,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @Entity
+@Table(name = "autores") 
 public class Autor {
 
     @Id

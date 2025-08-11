@@ -14,6 +14,13 @@
                 </li>
                 
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/autores/listar}">Autores</a>
+                </li>
+
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/categorias/listar}">Categorías</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:href="@{/usuarios}">Control de Usuarios</a>
                 </li>
                 

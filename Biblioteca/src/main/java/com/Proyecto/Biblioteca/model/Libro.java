@@ -22,6 +22,11 @@ public class Libro {
     private Categoria categoria;
 
     @ManyToMany
+    @JoinTable(
+        name = "libro_autor", // Nombre de la tabla de unión
+        joinColumns = @JoinColumn(name = "libro_id"), // Columna que referencia a la tabla Libro
+        inverseJoinColumns = @JoinColumn(name = "autor_id") // Columna que referencia a la tabla Autor
+    )
     private List<Autor> autores;
 
     // Getters y Setters
