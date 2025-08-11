@@ -38,34 +38,7 @@ public class PrestamoServiceImpl implements PrestamoService {
     
     }
 
-    @Override
-    @Transactional
-    public Prestamo crearPrestamo(Long usuarioId, Long ejemplarId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-        Ejemplar ejemplar = ejemplarRepository.findById(ejemplarId)
-                .orElseThrow(() -> new EntityNotFoundException("Ejemplar no encontrado"));
-
-        if (ejemplar.getEstado() != EstadoEjemplar.DISPONIBLE) {
-            throw new IllegalStateException("El ejemplar no está disponible para préstamo.");
-        }
-        
-        long prestamosActivos = prestamoRepository.countByUsuarioAndFechaDevolucionIsNull(usuario);
-        if (prestamosActivos >= 5) {
-            throw new IllegalStateException("El usuario ya tiene el máximo de 5 préstamos activos.");
-        }
-
-        Prestamo nuevoPrestamo = new Prestamo();
-        nuevoPrestamo.setUsuario(usuario);
-        nuevoPrestamo.setEjemplar(ejemplar);
-        nuevoPrestamo.setFechaPrestamo(LocalDate.now());
-        nuevoPrestamo.setFechaVencimiento(LocalDate.now().plusDays(15));
-        
-        ejemplar.setEstado(EstadoEjemplar.PRESTADO);
-        ejemplarRepository.save(ejemplar);
-
-        return prestamoRepository.save(nuevoPrestamo);
-    }
+    
 
     @Override
     @Transactional

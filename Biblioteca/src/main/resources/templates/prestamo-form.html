@@ -2,128 +2,302 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Crear/Editar Préstamo</title>
+    <title th:text="${prestamo.id == null} ? 'Crear Préstamo' : 'Editar Préstamo'">Préstamo - Biblioteca Digital</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Fauna+One&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #5d4a36;
+            --secondary-color: #8b6b47;
+            --light-bg: #fffdf7;
+            --text-color: #3a3226;
+            --border-color: #d4c9b1;
+            --readonly-bg: #e8e0d0; /* Fondo más oscuro para campos no editables */
+            --readonly-text: #3a3226; /* Texto más oscuro */
+        }
+        
+        body {
+            background-color: #f5f1e6;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: 'Fauna One', serif;
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        
+        .loan-form-container {
+            background-color: rgba(255, 253, 247, 0.97);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(58, 50, 38, 0.3);
+            padding: 2.5rem;
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+            border-top: 8px solid var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Estilo para campos no editables */
+        .form-control-plaintext {
+            padding: 12px 15px;
+            background-color: var(--readonly-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 4px !important;
+            color: var(--readonly-text) !important;
+            font-weight: 500;
+            margin-bottom: 0;
+        }
+        
+        /* Estilo para selects deshabilitados */
+        select[disabled] {
+            background-color: var(--readonly-bg) !important;
+            color: var(--readonly-text) !important;
+            cursor: not-allowed;
+            opacity: 1;
+        }
+        
+        /* Resto de estilos... */
+        h2 {
+            color: var(--primary-color);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 2.3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--secondary-color), transparent);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-group label i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .form-control {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px 15px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(139, 107, 71, 0.25);
+        }
+        
+        .btn-submit {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            font-family: 'Cinzel', serif;
+            padding: 10px 25px;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+        
+        .btn-submit:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-cancel {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+            font-family: 'Fauna One', serif;
+            padding: 10px 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .form-icon {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+        
+        .action-buttons {
+            text-align: center;
+            margin-top: 2rem;
+        }
+    </style>
 </head>
 <body>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-    <div class="container mt-4">
-        <h2 th:text="${prestamo.id == null} ? 'Crear Préstamo' : 'Editar Préstamo'"></h2>
-        <form th:action="@{/prestamos/guardar}" th:object="${prestamo}" method="post">
-            <input type="hidden" th:field="*{id}" />
+    <div class="container">
+        <div class="loan-form-container">
+            <div class="form-icon" th:text="${prestamo.id == null} ? '📝' : '✏️'"></div>
+            <h2 th:text="${prestamo.id == null} ? 'Crear Préstamo' : 'Editar Préstamo'"></h2>
             
-            <div th:if="${prestamo.id == null}">
-                <div class="form-group">
-                    <label for="libro">Libro</label>
-                    <select id="libro" class="form-control" required th:field="*{ejemplar.libro.id}">
-                        <option value="">Seleccione un libro</option>
-                        <option th:each="libro : ${libros}" th:value="${libro.id}" th:text="${libro.titulo}"></option>
-                    </select>
+            <form th:action="@{/prestamos/guardar}" th:object="${prestamo}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                
+                <div th:if="${prestamo.id == null}">
+                    <div class="form-group">
+                        <label for="libro"><i>📚</i> Libro</label>
+                        <select id="libro" class="form-control" required th:field="*{ejemplar.libro.id}">
+                            <option value="">Seleccione un libro</option>
+                            <option th:each="libro : ${libros}" 
+                                    th:value="${libro.id}" 
+                                    th:text="${libro.titulo}"></option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ejemplar"><i>🔖</i> Ejemplar Disponible</label>
+                        <select id="ejemplar" th:field="*{ejemplar.id}" class="form-control" required>
+                            <option value="">Seleccione un libro primero</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="usuario"><i>👤</i> Usuario</label>
+                        <select id="usuario" th:field="*{usuario.id}" class="form-control" required>
+                            <option value="">Seleccione un usuario</option>
+                            <option th:each="usuario : ${usuarios}" 
+                                    th:value="${usuario.id}" 
+                                    th:text="${usuario.username}"></option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="ejemplar">Ejemplar Disponible</label>
-                    <select id="ejemplar" th:field="*{ejemplar.id}" class="form-control" required>
-                        <option value="">Seleccione un ejemplar</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="usuario">Usuario</label>
-                    <select id="usuario" th:field="*{usuario.id}" class="form-control" required>
-                        <option value="">Seleccione un usuario</option>
-                        <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.username}"></option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="fechaPrestamo">Fecha de Préstamo</label>
-                    <input type="date" id="fechaPrestamo" th:field="*{fechaPrestamo}" class="form-control" required />
-                </div>
-            </div>
 
-            <div th:if="${prestamo.id != null}">
-                <div class="form-group">
-                    <label>Libro</label>
-                    <p th:text="${prestamo.ejemplar?.libro?.titulo}" class="form-control-plaintext"></p>
-                    <input type="hidden" th:field="*{ejemplar.libro.id}" />
+                <div th:if="${prestamo.id != null}">
+                    <div class="form-group">
+                        <label><i>📚</i> Libro</label>
+                        <p th:text="${prestamo.ejemplar?.libro?.titulo}" class="form-control-plaintext"></p>
+                        <input type="hidden" th:field="*{ejemplar.libro.id}" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i>🔖</i> Ejemplar</label>
+                        <p th:text="'ID Ejemplar: ' + ${prestamo.ejemplar?.id}" class="form-control-plaintext"></p>
+                        <input type="hidden" th:field="*{ejemplar.id}" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label><i>👤</i> Usuario</label>
+                        <p th:text="${prestamo.usuario?.username}" class="form-control-plaintext"></p>
+                        <input type="hidden" th:field="*{usuario.id}" />
+                    </div>
                 </div>
+                
                 <div class="form-group">
-                    <label>Ejemplar</label>
-                    <p th:text="'ID Ejemplar: ' + ${prestamo.ejemplar?.id}" class="form-control-plaintext"></p>
-                    <input type="hidden" th:field="*{ejemplar.id}" />
+                      <label for="fechaPrestamo"><i>📅</i> Fecha de Préstamo</label>
+                      <input type="date" id="fechaPrestamo" th:field="*{fechaPrestamo}" 
+                      class="form-control" required
+                      th:value="${prestamo.id != null} ? ${#temporals.format(prestamo.fechaPrestamo, 'yyyy-MM-dd')} : ${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM-dd')}" />
                 </div>
-                <div class="form-group">
-                    <label>Usuario</label>
-                    <p th:text="${prestamo.usuario?.username}" class="form-control-plaintext"></p>
-                    <input type="hidden" th:field="*{usuario.id}" />
-                </div>
-                <div class="form-group">
-                    <label for="fechaPrestamo">Fecha de Préstamo</label>
-                    <input type="date" class="form-control" th:field="*{fechaPrestamo}"
-                        th:value="${#temporals.format(prestamo.fechaPrestamo, 'yyyy-MM-dd')}" />
-                </div>
-            </div>
 
-            <div class="form-group">
-                <label for="fechaVencimiento">Fecha de Vencimiento</label>
-                <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control" required/>
-            </div>
-            
-            <button type="submit" class="btn btn-primary" th:text="${prestamo.id == null} ? 'Registrar Préstamo' : 'Actualizar Préstamo'"></button>
-            <a href="/prestamos/listar" class="btn btn-secondary">Cancelar</a>
-        </form>
+                <div class="form-group">
+                    <label for="fechaVencimiento"><i>⏳</i> Fecha de Vencimiento</label>
+                    <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" 
+                           class="form-control" required
+                           th:value="${prestamo.id != null} ? ${#temporals.format(prestamo.fechaVencimiento, 'yyyy-MM-dd')} : ''" />
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-submit" th:text="${prestamo.id == null} ? 'Registrar Préstamo' : 'Actualizar Préstamo'"></button>
+                    <a th:href="@{/prestamos/listar}" class="btn btn-cancel">Cancelar</a>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script th:if="${prestamo.id == null}" th:inline="javascript">
     $(document).ready(function() {
         function cargarEjemplares(libroId) {
             var ejemplarSelect = $('#ejemplar');
-            ejemplarSelect.empty();
+            ejemplarSelect.empty().prop('disabled', true);
             ejemplarSelect.append($('<option>', {
                 value: '',
-                text: 'Cargando...'
+                text: libroId ? 'Cargando ejemplares...' : 'Seleccione un libro primero'
             }));
 
             if (libroId) {
                 $.get('/prestamos/ejemplares-disponibles/' + libroId, function(data) {
                     ejemplarSelect.empty();
-                    ejemplarSelect.append($('<option>', {
-                        value: '',
-                        text: 'Seleccione un ejemplar'
-                    }));
-                    if (data.length > 0) {
+                    if (data && data.length > 0) {
+                        ejemplarSelect.append($('<option>', {
+                            value: '',
+                            text: 'Seleccione un ejemplar'
+                        }));
                         $.each(data, function(index, ejemplar) {
                             ejemplarSelect.append($('<option>', {
                                 value: ejemplar.id,
-                                text: 'ID Ejemplar: ' + ejemplar.id
+                                text: 'Ejemplar #' + ejemplar.id + (ejemplar.codigoEjemplar ? ' (' + ejemplar.codigoEjemplar + ')' : '')
                             }));
                         });
+                        ejemplarSelect.prop('disabled', false);
                     } else {
                         ejemplarSelect.append($('<option>', {
                             value: '',
-                            text: 'No hay ejemplares disponibles'
+                            text: 'No hay ejemplares disponibles para este libro'
                         }));
                     }
                 }).fail(function() {
-                    ejemplarSelect.empty();
-                    ejemplarSelect.append($('<option>', {
+                    ejemplarSelect.empty().append($('<option>', {
                         value: '',
                         text: 'Error al cargar ejemplares'
                     }));
                 });
-            } else {
-                ejemplarSelect.empty();
-                ejemplarSelect.append($('<option>', {
-                    value: '',
-                    text: 'Seleccione un ejemplar'
-                }));
             }
         }
+
+        // Cargar ejemplares al cambiar libro
         $('#libro').change(function() {
-            var libroId = $(this).val();
-            cargarEjemplares(libroId);
+            cargarEjemplares($(this).val());
         });
+
+        // Inicializar si ya hay un libro seleccionado
+        if ($('#libro').val()) {
+            cargarEjemplares($('#libro').val());
+        }
     });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

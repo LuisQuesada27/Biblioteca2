@@ -2,39 +2,188 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Reporte de Préstamos Atrasados</title>
+    <title>Préstamos Atrasados - Biblioteca Digital</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Fauna+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5d4a36;
+            --secondary-color: #8b6b47;
+            --light-bg: #fffdf7;
+            --text-color: #3a3226;
+            --border-color: #d4c9b1;
+            --danger-color: #8b4a47;
+        }
+        
+        body {
+            background-color: #f5f1e6;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: 'Fauna One', serif;
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        
+        .overdue-container {
+            background-color: rgba(255, 253, 247, 0.97);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(58, 50, 38, 0.3);
+            padding: 2.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            border-top: 8px solid var(--danger-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .overdue-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            opacity: 0.8;
+        }
+        
+        h2 {
+            color: var(--danger-color);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 2.3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--danger-color), transparent);
+        }
+        
+        .alert-info {
+            background-color: rgba(139, 107, 71, 0.1);
+            border-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+        
+        .table {
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(58, 50, 38, 0.1);
+        }
+        
+        .table thead th {
+            background-color: var(--danger-color);
+            color: #fffdf7;
+            font-family: 'Cinzel', serif;
+            font-weight: 400;
+            border: none;
+        }
+        
+        .table tbody td {
+            background-color: var(--light-bg);
+            border-bottom: 1px solid #e8e0d0;
+            vertical-align: middle;
+        }
+        
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .table tbody tr:hover td {
+            background-color: #f0e9d9;
+        }
+        
+        .days-overdue {
+            font-weight: 600;
+            color: var(--danger-color);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            font-family: 'Fauna One', serif;
+            padding: 10px 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .warning-icon {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--danger-color);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
-    <div class="container mt-4">
-        <h2>Reporte de Préstamos Atrasados</h2>
 
-        <div th:if="${prestamosAtrasados.isEmpty()}">
-           <p class="alert alert-info">No hay préstamos atrasados en este momento.</p>
+    <div class="container">
+        <div class="overdue-container">
+            <div class="warning-icon">⚠️</div>
+            <h2>Reporte de Préstamos Atrasados</h2>
+
+            <div th:if="${prestamosAtrasados.isEmpty()}" class="alert alert-info text-center">
+                No hay préstamos atrasados en este momento.
+            </div>
+
+            <div th:unless="${prestamosAtrasados.isEmpty()}" class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Libro</th>
+                            <th>Ejemplar</th>
+                            <th>Usuario</th>
+                            <th>Fecha Vencimiento</th>
+                            <th>Días Atrasados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="prestamo : ${prestamosAtrasados}">
+                            <td th:text="${prestamo.ejemplar?.libro?.titulo}"></td>
+                            <td th:text="${prestamo.ejemplar?.id}"></td>
+                            <td th:text="${prestamo.usuario?.username}"></td>
+                            <td th:text="${#temporals.format(prestamo.fechaVencimiento, 'dd/MM/yyyy')}"></td>
+                            <td class="days-overdue" th:text="${T(java.time.temporal.ChronoUnit).DAYS.between(prestamo.fechaVencimiento, T(java.time.LocalDate).now())}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center mt-4">
+                <a th:href="@{/}" class="btn btn-secondary">
+                    <i>↩️</i> Volver al inicio
+                </a>
+            </div>
         </div>
-
-         <table class="table table-striped" th:unless="${prestamosAtrasados.isEmpty()}">
-            <thead>
-                <tr>
-                    <th>Libro</th>
-                    <th>Ejemplar ID</th>
-                    <th>Usuario</th>
-                    <th>Fecha Vencimiento</th>
-                    <th>Días Atrasados</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="prestamo : ${prestamosAtrasados}">
-                    <td th:text="${prestamo.ejemplar?.libro?.titulo}"></td>
-                    <td th:text="${prestamo.ejemplar?.id}"></td>
-                    <td th:text="${prestamo.usuario?.username}"></td>
-                    <td th:text="${#temporals.format(prestamo.fechaVencimiento, 'dd-MM-yyyy')}"></td>
-                    <td th:text="${#temporals.diff(prestamo.fechaVencimiento, T(java.time.LocalDate).now()).getDays()}"></td> </tr>
-             </tbody>
-        </table>
-
-        <a href="/" class="btn btn-secondary">Volver al inicio</a>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

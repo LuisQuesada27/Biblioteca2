@@ -2,39 +2,199 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Registro de Usuario</title>
+    <title>Registro de Usuario - Biblioteca Digital</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Fauna+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5d4a36;
+            --secondary-color: #8b6b47;
+            --light-bg: #fffdf7;
+            --text-color: #3a3226;
+            --border-color: #d4c9b1;
+        }
+        
+        body {
+            background-color: #f5f1e6;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: 'Fauna One', serif;
+            color: var(--text-color);
+            min-height: 100vh;
+            padding-top: 50px;
+        }
+        
+        .registration-container {
+            background-color: rgba(255, 253, 247, 0.97);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(58, 50, 38, 0.3);
+            padding: 2.5rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            border-top: 8px solid var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .registration-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            opacity: 0.8;
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 1.5rem;
+            border-bottom: none;
+        }
+        
+        .card-body {
+            padding: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-group label i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .form-control {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px 15px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(139, 107, 71, 0.25);
+        }
+        
+        .btn-register {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            font-family: 'Cinzel', serif;
+            padding: 12px;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .btn-register:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .registration-icon {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+        
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .login-link a {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 1px dotted var(--secondary-color);
+            transition: all 0.3s ease;
+        }
+        
+        .login-link a:hover {
+            color: var(--secondary-color);
+            border-bottom: 1px solid var(--secondary-color);
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="registration-container">
+                <div class="registration-icon">📝</div>
                 <div class="card">
-                    <div class="card-header text-center">
-                        <h3>Registro de Usuario Nuevo</h3>
+                    <div class="card-header">
+                        <h3>Registro de Usuario</h3>
                     </div>
                     <div class="card-body">
                         <form th:action="@{/registro}" th:object="${usuario}" method="post">
                             <div class="form-group">
-                               <label for="username">Nombre de Usuario</label>
-                               <input type="text" id="username" th:field="*{username}" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                               <label for="email">Correo Electrónico</label>
-                               <input type="email" id="email" th:field="*{email}" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                               <label for="password">Contraseña</label>
-                               <input type="password" class="form-control" th:field="*{password}" placeholder="Contraseña" required>
+                                <label for="username">
+                                    <i>👤</i> Nombre de Usuario
+                                </label>
+                                <input type="text" id="username" th:field="*{username}" 
+                                       class="form-control" required
+                                       placeholder="Ingrese su nombre de usuario">
                             </div>
                             
-                            <button type="submit" class="btn btn-primary btn-block">Registrarse</button>
-
+                            <div class="form-group">
+                                <label for="email">
+                                    <i>✉️</i> Correo Electrónico
+                                </label>
+                                <input type="email" id="email" th:field="*{email}" 
+                                       class="form-control" required
+                                       placeholder="Ingrese su correo electrónico">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">
+                                    <i>🔒</i> Contraseña
+                                </label>
+                                <input type="password" id="password" th:field="*{password}" 
+                                       class="form-control" required
+                                       placeholder="Cree una contraseña segura">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-register btn-block">
+                                <i>📚</i> Registrarse en la Biblioteca
+                            </button>
+                            
+                            <div class="login-link">
+                                ¿Ya tienes una cuenta? <a th:href="@{/login}">Inicia sesión aquí</a>
+                            </div>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

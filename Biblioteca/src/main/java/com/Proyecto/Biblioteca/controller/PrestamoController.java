@@ -29,13 +29,8 @@ public class PrestamoController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         
-        System.out.println("Usuario autenticado: " + username); 
-        System.out.println("Roles del usuario: " + auth.getAuthorities()); 
-
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        
-        System.out.println("¿Es administrador?: " + isAdmin); 
 
         List<Prestamo> prestamos;
 
@@ -58,21 +53,21 @@ public class PrestamoController {
         return "prestamo-form";
     }
 
-    ////Muestra el formulario para guardar un nuevo préstamo
+    // Guarda un nuevo préstamo o actualiza uno existente
     @PostMapping("/guardar")
     public String guardarPrestamo(@ModelAttribute Prestamo prestamo, RedirectAttributes redirectAttributes) {
         try {
+            prestamoService.guardarPrestamo(prestamo);
+            
             if (prestamo.getId() == null) {
-                Long usuarioId = prestamo.getUsuario().getId();
-                Long ejemplarId = prestamo.getEjemplar().getId();
-                prestamoService.crearPrestamo(usuarioId, ejemplarId);
                 redirectAttributes.addFlashAttribute("mensaje", "Préstamo registrado exitosamente.");
             } else {
-                prestamoService.guardarPrestamo(prestamo);
                 redirectAttributes.addFlashAttribute("mensaje", "Préstamo actualizado exitosamente.");
             }
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
+            // Se puede redirigir con un modelo para preservar los datos del formulario si es necesario.
+            // Para mantenerlo simple, redirigimos al formulario de creación.
             return "redirect:/prestamos/crear";
         }
         return "redirect:/prestamos/listar";
@@ -90,7 +85,7 @@ public class PrestamoController {
         return "redirect:/prestamos/listar";
     }
     
-    //muestra una lista de objetos Ejemplar en formato JSON.
+    // Muestra una lista de objetos Ejemplar en formato JSON.
     @GetMapping("/ejemplares-disponibles/{libroId}")
     @ResponseBody
     public List<Ejemplar> getEjemplaresDisponibles(@PathVariable Long libroId) {
@@ -104,28 +99,27 @@ public class PrestamoController {
         return "prestamo-form"; 
     }
 
-    //Muestra la vista del reporte de multas. 
+    // Reporte de multas para administradores
     @GetMapping("/reporte-multas")
     public String mostrarReporteMultas(Model model) {
-        // Llama al nuevo método que obtiene ambos tipos de multas
-        List<Prestamo> multasGeneradas = prestamoService.obtenerTodosLosPrestamosConMulta();
-        model.addAttribute("multasGeneradas", multasGeneradas);
-        return "multas-reporte";
+    List<Prestamo> multasGeneradas = prestamoService.obtenerTodosLosPrestamosConMulta();
+    model.addAttribute("multasGeneradas", multasGeneradas);
+    return "reportes/multas-generadas"; // <-- Correcto
     }
 
-    // lógica para pagar la multa 
+    // Lógica para pagar la multa 
     @PostMapping("/pagar-multa")
     public String pagarMulta(@RequestParam("prestamoId") Long prestamoId, RedirectAttributes redirectAttributes) {
-    prestamoService.pagarMulta(prestamoId);
-    redirectAttributes.addFlashAttribute("mensaje", "Multa pagada exitosamente.");
-    return "redirect:/reportes/mis-multas"; 
+        prestamoService.pagarMulta(prestamoId);
+        redirectAttributes.addFlashAttribute("mensaje", "Multa pagada exitosamente.");
+        return "redirect:/prestamos/listar"; // Redirigido a la lista principal de préstamos
     }
 
-    //Muestra la vista del reporte de prestamos atrasados. 
+    // Reporte de préstamos atrasados para administradores
     @GetMapping("/reporte-atrasados")
     public String mostrarReporteAtrasados(Model model) {
-        List<Prestamo> prestamosAtrasados = prestamoService.obtenerPrestamosAtrasados();
-        model.addAttribute("prestamosAtrasados", prestamosAtrasados);
-        return "prestamos-atrasados-reporte";
-    }
+    List<Prestamo> prestamosAtrasados = prestamoService.obtenerPrestamosAtrasados();
+    model.addAttribute("prestamosAtrasados", prestamosAtrasados);
+    return "reportes/prestamos-atrasados"; 
+}
 }

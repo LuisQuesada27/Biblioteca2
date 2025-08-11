@@ -2,60 +2,295 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Editar Libro</title>
+    <title>Editar Libro - Biblioteca Digital</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Fauna+One&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        :root {
+            --primary-color: #5d4a36;
+            --secondary-color: #8b6b47;
+            --light-bg: #fffdf7;
+            --text-color: #3a3226;
+            --border-color: #d4c9b1;
+        }
+        
+        body {
+            background-color: #f5f1e6;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: 'Fauna One', serif;
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        
+        .library-edit-container {
+            background-color: rgba(255, 253, 247, 0.97);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(58, 50, 38, 0.3);
+            padding: 2.5rem;
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+            border-top: 8px solid var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .library-edit-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            opacity: 0.8;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 2.3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--secondary-color), transparent);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-group label i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+        
+        .form-control {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px 15px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(139, 107, 71, 0.25);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+        }
+        
+        .btn-edit {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            font-family: 'Cinzel', serif;
+            padding: 10px 25px;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .btn-edit:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-cancel {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: white;
+            font-family: 'Fauna One', serif;
+            padding: 10px 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-edit i, .btn-cancel i {
+            margin-right: 8px;
+        }
+        
+        .form-icon {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+        
+        /* Estilos para select2 */
+        .select2-container--default .select2-selection--multiple {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color) !important;
+            border-radius: 4px !important;
+            min-height: 38px;
+        }
+        
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+        
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white;
+        }
+        
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-color: var(--secondary-color) !important;
+        }
+        
+        .action-buttons {
+            text-align: center;
+            margin-top: 2rem;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h2>Editar Libro</h2>
-        <form th:action="@{/libros/actualizar/{id}(id=${libro.id})}" th:object="${libro}" method="post">
-            <input type="hidden" th:field="*{id}">
-            
-            <div class="form-group">
-                <label for="titulo">Título</label>
-                <input type="text" id="titulo" th:field="*{titulo}" class="form-control" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="autores">Autor(es)</label>
-                <select id="autores" th:field="*{autores}" class="form-control" multiple="multiple" required>
-                    <option th:each="autor : ${autores}"
-                            th:value="${autor.id}"
-                            th:text="${autor.nombreCompleto}"
-                            th:selected="${#lists.contains(libro.autores, autor)}">
-                    </option>
-                </select>
-            </div>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-            <div class="form-group">
-                <label for="categoria">Categoría</label>
-                <select id="categoria" th:field="*{categoria}" class="form-control" required>
-                    <option th:each="categoria : ${categorias}"
-                            th:value="${categoria.id}"
-                            th:text="${categoria.nombre}"
-                            th:selected="${libro.categoria != null and libro.categoria.id == categoria.id}">
-                    </option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="anioPublicacion">Año de Publicación</label>
-                <input type="number" id="anioPublicacion" th:field="*{anioPublicacion}" class="form-control" required>
-            </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="library-edit-container">
+                    <div class="form-icon">✏️</div>
+                    <h2>Editar Libro</h2>
+                    
+                    <form th:action="@{/libros/actualizar/{id}(id=${libro.id})}" th:object="${libro}" method="post">
+                        <input type="hidden" th:field="*{id}">
+                        
+                        <div class="form-group">
+                            <label for="titulo">
+                                <i>📚</i> Título
+                            </label>
+                            <input type="text" id="titulo" th:field="*{titulo}" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="autores">
+                                <i>✍️</i> Autor(es)
+                            </label>
+                            <select id="autores" th:field="*{autores}" class="form-control" multiple="multiple" required>
+                                <option th:each="autor : ${autores}"
+                                        th:value="${autor.id}"
+                                        th:text="${autor.nombreCompleto}"
+                                        th:selected="${#lists.contains(libro.autores, autor)}">
+                                </option>
+                            </select>
+                        </div>
 
-            <div class="form-group">
-                <label for="isbn">ISBN</label>
-                <input type="text" id="isbn" th:field="*{isbn}" class="form-control" required>
-            </div>
+                        <div class="form-group">
+                            <label for="categoria">
+                                <i>🏷️</i> Categoría
+                            </label>
+                            <select id="categoria" th:field="*{categoria}" class="form-control" required>
+                                <option th:each="categoria : ${categorias}"
+                                        th:value="${categoria.id}"
+                                        th:text="${categoria.nombre}"
+                                        th:selected="${libro.categoria != null and libro.categoria.id == categoria.id}">
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="anioPublicacion">
+                                <i>📅</i> Año de Publicación
+                            </label>
+                            <input type="number" id="anioPublicacion" th:field="*{anioPublicacion}" 
+                                   class="form-control" required min="1000" max="2023">
+                        </div>
 
-            <div class="form-group">
-                <label for="descripcion">Descripción</label>
-                <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="3"></textarea>
+                        <div class="form-group">
+                            <label for="isbn">
+                                <i>🔖</i> ISBN
+                            </label>
+                            <input type="text" id="isbn" th:field="*{isbn}" class="form-control" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="descripcion">
+                                <i>📝</i> Descripción
+                            </label>
+                            <textarea id="descripcion" th:field="*{descripcion}" class="form-control" rows="5"></textarea>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-edit">
+                                <i>💾</i> Guardar Cambios
+                            </button>
+                            <a th:href="@{/libros}" class="btn btn-cancel">
+                                <i>✖</i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            <a href="/libros" class="btn btn-secondary">Cancelar</a>
-        </form>
+        </div>
     </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2 para el select múltiple
+            $('#autores').select2({
+                placeholder: "Seleccione uno o más autores",
+                allowClear: true
+            });
+            
+            // Inicializar Select2 para el select simple
+            $('#categoria').select2({
+                placeholder: "Seleccione una categoría",
+                allowClear: true
+            });
+        });
+    </script>
 </body>
 </html>

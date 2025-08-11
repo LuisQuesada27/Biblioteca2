@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PrestamoService {
   
-    Prestamo crearPrestamo(Long usuarioId, Long ejemplarId);
+    
     Prestamo devolverPrestamo(Long prestamoId);
     List<Prestamo> obtenerTodosLosPrestamos();
     List<Ejemplar> obtenerEjemplaresDisponibles(Long libroId);

@@ -2,52 +2,252 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Reporte de Multas Generadas</title>
+    <title>Reporte de Multas - Biblioteca Digital</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Fauna+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5d4a36;
+            --secondary-color: #8b6b47;
+            --light-bg: #fffdf7;
+            --text-color: #3a3226;
+            --border-color: #d4c9b1;
+            --warning-color: #b38a58;
+            --danger-color: #8b4a47;
+            --success-color: #4a6b3d;
+        }
+        
+        body {
+            background-color: #f5f1e6;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: 'Fauna One', serif;
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        
+        .fines-container {
+            background-color: rgba(255, 253, 247, 0.97);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(58, 50, 38, 0.3);
+            padding: 2.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            border-top: 8px solid var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .fines-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-color);
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            opacity: 0.8;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 2.3rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h2::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--secondary-color), transparent);
+        }
+        
+        .alert-info {
+            background-color: rgba(139, 107, 71, 0.1);
+            border-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+        
+        .table {
+            background-color: var(--light-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(58, 50, 38, 0.1);
+        }
+        
+        .table thead th {
+            background-color: var(--primary-color);
+            color: #fffdf7;
+            font-family: 'Cinzel', serif;
+            font-weight: 400;
+            border: none;
+        }
+        
+        .table tbody td {
+            background-color: var(--light-bg);
+            border-bottom: 1px solid #e8e0d0;
+            vertical-align: middle;
+        }
+        
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .table tbody tr:hover td {
+            background-color: #f0e9d9;
+        }
+        
+        .badge {
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .badge-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn {
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #5d8a4d;
+            border-color: #5d8a4d;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.85rem;
+        }
+        
+        .money-cell {
+            font-weight: 600;
+            color: var(--danger-color);
+        }
+        
+        .action-cell {
+            white-space: nowrap;
+        }
+        
+        .form-icon {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+    </style>
 </head>
 <body>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
-    <div class="container mt-4">
-        <h2>Reporte de Multas Generadas</h2>
 
-        <div th:if="${multasGeneradas.isEmpty()}">
-            <p class="alert alert-info">No hay multas generadas o préstamos atrasados en este momento.</p>
+    <div class="container">
+        <div class="fines-container">
+            <div class="form-icon">💰</div>
+            <h2>Reporte de Multas Generadas</h2>
+
+            <div th:if="${multasGeneradas.isEmpty()}" class="alert alert-info text-center">
+                No hay multas generadas o préstamos atrasados en este momento.
+            </div>
+
+            <div th:unless="${multasGeneradas.isEmpty()}" class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Libro</th>
+                            <th>Usuario</th>
+                            <th>Fecha Vencimiento</th>
+                            <th>Estado</th>
+                            <th>Monto</th>
+                            <th class="action-cell">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="prestamo : ${multasGeneradas}">
+                            <td th:text="${prestamo.ejemplar?.libro?.titulo}"></td>
+                            <td th:text="${prestamo.usuario?.username}"></td>
+                            <td th:text="${#temporals.format(prestamo.fechaVencimiento, 'dd/MM/yyyy')}"></td>
+                            
+                            <td>
+                                <span th:if="${prestamo.multaGenerada != null && prestamo.multaGenerada > 0}" 
+                                      class="badge badge-danger">Generada</span>
+                                <span th:if="${prestamo.multaGenerada == null}" 
+                                      class="badge badge-warning">Pendiente</span>
+                            </td>
+                            
+                            <td class="money-cell">
+                                <span th:if="${prestamo.multaGenerada != null}" 
+                                      th:text="${'₡' + #numbers.formatDecimal(prestamo.multaGenerada, 1, 2)}"></span>
+                                <span th:if="${prestamo.multaGenerada == null}" 
+                                      th:text="${'₡' + #numbers.formatDecimal(T(java.time.temporal.ChronoUnit).DAYS.between(prestamo.fechaVencimiento, T(java.time.LocalDate).now()) * 1000, 1, 2)}"></span>  </td>
+                            
+                            <td class="action-cell">
+                                <form th:action="@{/prestamos/pagar-multa}" method="post" class="d-inline">
+                                    <input type="hidden" name="prestamoId" th:value="${prestamo.id}">
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        <i>💵</i> Pagar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="text-center mt-4">
+                <a th:href="@{/}" class="btn btn-secondary">
+                    <i>↩️</i> Volver al inicio
+                </a>
+            </div>
         </div>
-
-        <table class="table table-striped" th:unless="${multasGeneradas.isEmpty()}">
-            <thead>
-                <tr>
-                  <th>Libro</th>
-                  <th>Usuario</th>
-                  <th>Fecha de Vencimiento</th>
-                  <th>Estado de la Multa</th>
-                  <th>Monto</th>
-                  <th>Acción</th> </tr>
-            </thead>
-            <tbody>
-                <tr th:each="prestamo : ${multasGeneradas}">
-                   <td th:text="${prestamo.ejemplar?.libro?.titulo}"></td>
-                   <td th:text="${prestamo.usuario?.username}"></td>
-                   <td th:text="${#temporals.format(prestamo.fechaVencimiento, 'dd-MM-yyyy')}"></td>
-                   
-                   <td th:if="${prestamo.multaGenerada != null && prestamo.multaGenerada > 0}">Generada</td>
-                  <td th:if="${prestamo.multaGenerada == null}">Pendiente</td>
-                   
-                   <td th:if="${prestamo.multaGenerada != null}" th:text="${#numbers.formatCurrency(prestamo.multaGenerada)}"></td>
-                   <td th:if="${prestamo.multaGenerada == null}" th:text="${#numbers.formatCurrency(#temporals.diff(prestamo.fechaVencimiento, T(java.time.LocalDate).now()).getDays() * 0.5)}"></td>
-                   
-                             <td>
-                        <form th:action="@{/prestamos/pagar-multa}" method="post">
-                            <input type="hidden" name="prestamoId" th:value="${prestamo.id}">
-                            <button type="submit" class="btn btn-success btn-sm">Pagar</button>
-                         </form>
-                   </td>
-                  
-                </tr>
-             </tbody>
-        </table>
-
-        <a href="/" class="btn btn-secondary">Volver al inicio</a>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

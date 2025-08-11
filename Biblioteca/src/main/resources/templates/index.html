@@ -2,33 +2,110 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Página Principal</title>
+    <title>Biblioteca Digital</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Fauna+One&display=swap" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(to right, #ece9e6, #ffffff); /* Un degradado suave para el fondo */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            color: #333;
+            background-color: #f5f1e6;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: 'Fauna One', serif;
+            color: #3a3226;
+            min-height: 100vh;
         }
+        
         .container {
-            margin-top: 5rem; /* Separación del navbar */
+            margin-top: 5rem;
+            padding-bottom: 3rem;
         }
-        .card {
-            background-color: #fff;
+        
+        .library-card {
+            background-color: rgba(255, 253, 247, 0.92);
             border: none;
-            border-radius: 1rem;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.05); /* Sombra suave para un efecto 3D */
-            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(58, 50, 38, 0.2);
+            padding: 3rem;
             text-align: center;
+            border-top: 8px solid #8b6b47;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(2px);
         }
-        .card h1 {
-            color: #5a2e9b; /* Un color de título más vibrante */
-            font-weight: 300;
-            margin-bottom: 1rem;
+        
+        .library-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background-color: #5d4a36;
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            opacity: 0.8;
         }
-        .card p {
-            color: #666;
-            font-size: 1.2rem;
+        
+        .library-card h1 {
+            color: #5d4a36;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .library-card p {
+            color: #5d4a36;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        
+        .library-icon {
+            font-size: 3rem;
+            color: #8b6b47;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+        
+        .feature-box {
+            background-color: rgba(255, 253, 247, 0.7);
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin: 1rem;
+            border-left: 4px solid #8b6b47;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(58, 50, 38, 0.1);
+        }
+        
+        .feature-box h3 {
+            color: #5d4a36;
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+        }
+        
+        .quote-container {
+            font-style: italic;
+            color: #5d4a36;
+            padding: 1.5rem;
+            border-left: 3px solid #8b6b47;
+            margin: 2rem auto;
+            max-width: 600px;
+            background-color: rgba(255, 253, 247, 0.6);
+        }
+        
+        .quote-author {
+            font-weight: bold;
+            text-align: right;
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -36,9 +113,40 @@
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
     <div class="container">
-        <div class="card">
-            <h1>Bienvenido a la Biblioteca Digital</h1>
-            <p>Utiliza la barra de navegación para explorar los libros y gestionar tu cuenta.</p>
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="library-card">
+                    <div class="library-icon">📚</div>
+                    <h1>Bienvenido a la Biblioteca Digital</h1>
+                    <p>Explora nuestro vasto catálogo de obras literarias, desde clásicos atemporales hasta las últimas novedades editoriales.</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="feature-box">
+                                <h3>Catálogo Completo</h3>
+                                <p>Descubre miles de títulos organizados por género, autor y época.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-box">
+                                <h3>Reservas Fáciles</h3>
+                                <p>Reserva tus libros favoritos con solo un clic.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-box">
+                                <h3>Recomendaciones</h3>
+                                <p>Recibe sugerencias personalizadas según tus intereses.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="quote-container">
+                        "La biblioteca es el templo del saber, donde las almas encuentran su alimento."
+                        <div class="quote-author"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
