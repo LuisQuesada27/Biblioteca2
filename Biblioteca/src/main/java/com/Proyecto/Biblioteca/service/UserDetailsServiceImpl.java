@@ -15,13 +15,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.usuarioRepository = usuarioRepository;
     }
 
+
+    //cuando un usuario intenta iniciar sesión, consulte la base de datos,
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return usuarioRepository.findByUsername(username)
             .map(usuario -> org.springframework.security.core.userdetails.User
                 .withUsername(usuario.getUsername())
                 .password(usuario.getPassword())
-                .roles(usuario.getRol().toString()) // <-- ¡Usa esta línea! Sin el prefijo "ROLE_"
+                .roles(usuario.getRol().toString()) 
                 .build())
             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
     }

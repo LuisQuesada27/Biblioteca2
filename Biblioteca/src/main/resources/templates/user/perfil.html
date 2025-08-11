@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de Usuario</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+<header>
+    <h1>Mi Biblioteca</h1>
+    <nav>
+        <a href="/">Inicio</a>
+        <a href="/libros">Catálogo de Libros</a>
+        <a href="/user/perfil">Mi Perfil</a>
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit">Cerrar Sesión</button>
+        </form>
+    </nav>
+</header>
+
+<main>
+    <h2>Bienvenido a tu perfil</h2>
+    <div class="perfil-info">
+        <p><strong>Usuario:</strong> <span th:text="${usuario.username}">NombreDeUsuario</span></p>
+        <p><strong>Rol:</strong> <span th:text="${usuario.rol}">RolDeUsuario</span></p>
+        <p><strong>Email:</strong> <span th:text="${usuario.email}">email@ejemplo.com</span></p>
+    </div>
+    
+    <h3>Préstamos Activos</h3>
+    <p>Esta sección mostrará tus préstamos actuales.</p>
+    </main>
+
+<footer>
+    <p>&copy; 2025 Mi Biblioteca</p>
+</footer>
+
+</body>
+</html>

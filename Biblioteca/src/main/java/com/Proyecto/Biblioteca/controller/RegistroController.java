@@ -2,7 +2,7 @@ package com.Proyecto.Biblioteca.controller;
 
 import com.Proyecto.Biblioteca.model.Usuario;
 import com.Proyecto.Biblioteca.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // <-- IMPORTANTE
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,26 +16,27 @@ import com.Proyecto.Biblioteca.model.Role;
 public class RegistroController {
 
     private final UsuarioRepository usuarioRepository;
-    private final BCryptPasswordEncoder passwordEncoder; // <-- INYECTAR EL ENCODER
-
-    @Autowired
+    private final BCryptPasswordEncoder passwordEncoder; 
+ 
     public RegistroController(UsuarioRepository usuarioRepository, BCryptPasswordEncoder passwordEncoder) {
-        this.usuarioRepository = usuarioRepository;
-        this.passwordEncoder = passwordEncoder;
+    this.usuarioRepository = usuarioRepository;
+    this.passwordEncoder = passwordEncoder;
     }
 
+    //muestra la página de registro al usuario
     @GetMapping("/registro")
     public String mostrarFormularioRegistro(Model model) {
          model.addAttribute("usuario", new Usuario());
     return "registro";
     }
 
+    //procesa los datos enviados desde el formulario de registro
     @PostMapping("/registro")
     public String registrarUsuario(@ModelAttribute Usuario usuario, RedirectAttributes redirectAttributes) {
     // Encriptar la contraseña antes de guardarla
     usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
 
-    // <-- ¡Añade esta línea!
+   
     usuario.setRol(Role.USER);
 
     usuarioRepository.save(usuario);

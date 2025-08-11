@@ -4,13 +4,42 @@
     <meta charset="UTF-8">
     <title>Página Principal</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(to right, #ece9e6, #ffffff); /* Un degradado suave para el fondo */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #333;
+        }
+        .container {
+            margin-top: 5rem; /* Separación del navbar */
+        }
+        .card {
+            background-color: #fff;
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.05); /* Sombra suave para un efecto 3D */
+            padding: 2rem;
+            text-align: center;
+        }
+        .card h1 {
+            color: #5a2e9b; /* Un color de título más vibrante */
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+        .card p {
+            color: #666;
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 <body>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-    <div class="container mt-4">
-        <h1>Bienvenido a la Biblioteca Digital</h1>
-        <p>Utiliza la barra de navegación para explorar los libros y gestionar tu cuenta.</p>
+    <div class="container">
+        <div class="card">
+            <h1>Bienvenido a la Biblioteca Digital</h1>
+            <p>Utiliza la barra de navegación para explorar los libros y gestionar tu cuenta.</p>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

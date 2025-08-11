@@ -6,16 +6,22 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
     <div class="container mt-4">
         <h2>Reporte de Préstamos Atrasados</h2>
 
-        <table class="table table-striped">
+        <div th:if="${prestamosAtrasados.isEmpty()}">
+           <p class="alert alert-info">No hay préstamos atrasados en este momento.</p>
+        </div>
+
+         <table class="table table-striped" th:unless="${prestamosAtrasados.isEmpty()}">
             <thead>
                 <tr>
                     <th>Libro</th>
                     <th>Ejemplar ID</th>
                     <th>Usuario</th>
                     <th>Fecha Vencimiento</th>
+                    <th>Días Atrasados</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,8 +30,8 @@
                     <td th:text="${prestamo.ejemplar?.id}"></td>
                     <td th:text="${prestamo.usuario?.username}"></td>
                     <td th:text="${#temporals.format(prestamo.fechaVencimiento, 'dd-MM-yyyy')}"></td>
-                </tr>
-            </tbody>
+                    <td th:text="${#temporals.diff(prestamo.fechaVencimiento, T(java.time.LocalDate).now()).getDays()}"></td> </tr>
+             </tbody>
         </table>
 
         <a href="/" class="btn btn-secondary">Volver al inicio</a>

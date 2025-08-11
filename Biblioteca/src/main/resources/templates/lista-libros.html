@@ -4,24 +4,57 @@
     <meta charset="UTF-8">
     <title>Catálogo de Libros</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: linear-gradient(to right, #ece9e6, #ffffff);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #333;
+        }
+        .container {
+            margin-top: 5rem;
+            background-color: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.05);
+            padding: 2rem;
+        }
+        h1 {
+            color: #5a2e9b;
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .table thead th {
+            background-color: #5a2e9b;
+            color: #fff;
+            border: none;
+            vertical-align: middle;
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .btn-success, .btn-warning, .btn-danger, .btn-primary {
+            border-radius: 0.5rem;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
     <div class="container mt-4">
-       <h1>Catálogo de Libros</h1>
+        <h1>Catálogo de Libros</h1>
 
-             <div sec:authorize="hasRole('ADMIN')">
+        <div sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/libros/crear}" class="btn btn-success mb-3">Crear Nuevo Libro</a>
-          </div>
+        </div>
 
         <table class="table table-striped">
-           <thead>
-               <tr>
+            <thead>
+                <tr>
                     <th>ID</th>
                     <th>Título</th>
-                     <th>Autor(es)</th>
-                     <th>Categoría</th>
+                    <th>Autor(es)</th>
+                    <th>Categoría</th>
                     <th>Año de Publicación</th>
                     <th sec:authorize="hasRole('ADMIN')">Acciones</th>
                 </tr>
@@ -38,13 +71,13 @@
                     </td>
                     <td th:text="${libro.categoria?.nombre}"></td>
                     <td th:text="${libro.anioPublicacion}"></td>
-                                    <td sec:authorize="hasRole('ADMIN')">
+                    <td sec:authorize="hasRole('ADMIN')">
                         <a th:href="@{/libros/editar/{id}(id=${libro.id})}" class="btn btn-warning btn-sm">Editar</a>
                         <a th:href="@{/libros/eliminar/{id}(id=${libro.id})}" class="btn btn-danger btn-sm">Eliminar</a>
                         <a th:href="@{/libros/crear-ejemplar/{id}(id=${libro.id})}" class="btn btn-primary btn-sm">Crear Ejemplar</a>
                     </td>
                 </tr>
-           </tbody>
+            </tbody>
         </table>
     </div>
 </body>

@@ -28,16 +28,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public RoleHierarchy roleHierarchy() {
+    public RoleHierarchy roleHierarchy() {       //Configura una jerarquía de roles
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
         roleHierarchy.setHierarchy("ADMIN > USER");
         return roleHierarchy;
     }
     
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {    //define la cadena de filtros de seguridad.
         http
-            .authorizeHttpRequests(authorize -> authorize
+            .authorizeHttpRequests(authorize -> authorize   //Configura las reglas de autorización para diferentes URL
                 // Reglas para el ADMIN
                 .requestMatchers("/admin/**", "/h2-console/**").hasRole("ADMIN")
                 .requestMatchers("/libros/crear", "/libros/editar/**", "/libros/eliminar/**").hasRole("ADMIN")
@@ -52,14 +52,14 @@ public class SecurityConfig {
                 // Todas las demás peticiones requieren autenticación
                 .anyRequest().authenticated()
             )
-            .formLogin(form -> form
+            .formLogin(form -> form        //Configura el comportamiento del formulario de inicio de sesión
                 .loginPage("/login").permitAll()
             )
             .logout(logout -> logout
                 .permitAll()
             );
 
-        http.csrf(csrf -> csrf.disable());
+        http.csrf(csrf -> csrf.disable());    // Deshabilita la protección CSRF (Cross-Site Request Forgery).Es como una protección
         http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
 
         return http.build();

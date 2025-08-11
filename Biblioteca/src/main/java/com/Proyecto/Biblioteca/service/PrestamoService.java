@@ -17,4 +17,11 @@ public interface PrestamoService {
     List<Usuario> obtenerTodosLosUsuarios();
     List<Prestamo> obtenerPrestamosAtrasados();
     List<Prestamo> obtenerPrestamosConMulta();
+    List<Prestamo> obtenerPrestamosPorUsuario(String username); 
+    List<Prestamo> obtenerPrestamosAtrasadosPorUsuario(String username);
+    List<Prestamo> obtenerMultasGeneradasPorUsuario(String username);
+    Prestamo obtenerPrestamoPorId(Long id);
+    Prestamo guardarPrestamo(Prestamo prestamo);
+    List<Prestamo> obtenerTodosLosPrestamosConMulta();
+    void pagarMulta(Long prestamoId);
 }

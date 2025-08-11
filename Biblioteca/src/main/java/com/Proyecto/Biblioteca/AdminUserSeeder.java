@@ -38,8 +38,9 @@ public class AdminUserSeeder implements CommandLineRunner {
         crearDatosDePrestamo();
     }
 
+    //Este metodo hace que cada vez que se inicie la aplicación, exista un usuario administrador por defecto.
     private void crearAdminPorDefecto() {
-        System.out.println("-----> Iniciando la creación de usuarios por defecto...");
+        System.out.println("Iniciando la creación de usuarios por defecto...");
         Optional<Usuario> adminOptional = usuarioRepository.findByUsername("admin");
 
         if (adminOptional.isEmpty()) {
@@ -49,12 +50,13 @@ public class AdminUserSeeder implements CommandLineRunner {
             admin.setRol(Role.ADMIN);
             admin.setEmail("admin@biblioteca.com");
             usuarioRepository.save(admin);
-            System.out.println("-----> Usuario ADMIN creado exitosamente.");
+            System.out.println("Usuario ADMIN creado exitosamente.");
         } else {
-            System.out.println("-----> El usuario ADMIN ya existe.");
+            System.out.println("El usuario ADMIN ya existe.");
         }
     }
 
+        //Este metodo hace que cada vez que se inicie la aplicación, exista un usuario user por defecto.
     private void crearUserPorDefecto() {
         Optional<Usuario> userOptional = usuarioRepository.findByUsername("user");
 
@@ -65,19 +67,20 @@ public class AdminUserSeeder implements CommandLineRunner {
             user.setRol(Role.USER);
             user.setEmail("user@biblioteca.com");
             usuarioRepository.save(user);
-            System.out.println("-----> Usuario USER creado exitosamente.");
+            System.out.println("Usuario USER creado exitosamente.");
         } else {
-            System.out.println("-----> El usuario USER ya existe.");
+            System.out.println("El usuario USER ya existe.");
         }
     }
 
+    //Esto garantiza que siempre haya datos básicos, como un autor y una categoría.
     private void crearDatosDePrueba() {
         if (autorRepository.count() == 0) {
             Autor autor = new Autor();
             autor.setNombreCompleto("J.R.R. Tolkien");
             autor.setPaisOrigen("Sudáfrica");
             autorRepository.save(autor);
-            System.out.println("-----> Autor por defecto creado.");
+            System.out.println("Autor por defecto creado.");
         }
 
         if (categoriaRepository.count() == 0) {
@@ -85,13 +88,13 @@ public class AdminUserSeeder implements CommandLineRunner {
             categoria.setNombre("Fantasía");
             categoria.setDescripcion("Género que incluye elementos sobrenaturales o mágicos.");
             categoriaRepository.save(categoria);
-            System.out.println("-----> Categoría por defecto creada.");
+            System.out.println("Categoría por defecto creada.");
         }
     }
 
     private void crearDatosDePrestamo() {
         if (libroRepository.count() == 0) {
-            // Crear Autores
+            // Crea Autores
             Autor autor1 = new Autor();
             autor1.setNombreCompleto("Gabriel García Márquez");
             autorRepository.save(autor1);
@@ -100,13 +103,13 @@ public class AdminUserSeeder implements CommandLineRunner {
             autor2.setNombreCompleto("J.R.R. Tolkien");
             autorRepository.save(autor2);
 
-            // Crear Libros usando el constructor corregido
+            // Crea Libros 
             Libro libro1 = new Libro("Cien años de soledad", 1967, List.of(autor1));
             Libro libro2 = new Libro("El Señor de los Anillos", 1954, List.of(autor2));
             libroRepository.save(libro1);
             libroRepository.save(libro2);
 
-            // Creación de Ejemplares
+            // Crea Ejemplares
             Ejemplar ejemplar1 = new Ejemplar(libro1, EstadoEjemplar.PRESTADO);
             Ejemplar ejemplar2 = new Ejemplar(libro2, EstadoEjemplar.DISPONIBLE);
             Ejemplar ejemplar3 = new Ejemplar(libro1, EstadoEjemplar.PRESTADO);
@@ -114,7 +117,7 @@ public class AdminUserSeeder implements CommandLineRunner {
             ejemplarRepository.save(ejemplar2);
             ejemplarRepository.save(ejemplar3);
 
-            // Creación de Usuarios (obteniendo los que ya existen)
+            // Crea Usuarios 
             Usuario usuario1 = usuarioRepository.findByUsername("user").orElseThrow();
             Usuario usuario2 = usuarioRepository.findByUsername("admin").orElseThrow();
 

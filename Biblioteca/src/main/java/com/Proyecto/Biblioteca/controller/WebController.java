@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class WebController {
 
+    //gestiona las peticiones web básicas y no protegidas de la aplicación
+
     @GetMapping("/")
     public String index() {
         return "index";

@@ -22,13 +22,13 @@ public class LibroController {
     private final LibroRepository libroRepository;
     private final AutorRepository autorRepository;
     private final CategoriaRepository categoriaRepository;
-    private final EjemplarRepository ejemplarRepository; // <-- Nuevo repositorio inyectado
+    private final EjemplarRepository ejemplarRepository; 
 
     public LibroController(LibroRepository libroRepository, AutorRepository autorRepository, CategoriaRepository categoriaRepository, EjemplarRepository ejemplarRepository) {
         this.libroRepository = libroRepository;
         this.autorRepository = autorRepository;
         this.categoriaRepository = categoriaRepository;
-        this.ejemplarRepository = ejemplarRepository; // <-- Asignación del nuevo repositorio
+        this.ejemplarRepository = ejemplarRepository; 
     }
 
     // Muestra la lista de libros
@@ -82,7 +82,7 @@ public class LibroController {
     public String actualizarLibro(@PathVariable("id") Long id, @ModelAttribute Libro libro) {
         libro.setId(id);
 
-        // Asegúrate de buscar los objetos completos de Autor y Categoria antes de guardar
+        // Se asegura de buscar los objetos completos de Autor y Categoria antes de guardar
         if (libro.getAutores() != null) {
             libro.setAutores(libro.getAutores().stream()
                     .map(autor -> autorRepository.findById(autor.getId()).orElse(null))
@@ -103,7 +103,7 @@ public class LibroController {
         return "redirect:/libros";
     }
 
-    // --- NUEVO MÉTODO PARA CREAR EJEMPLARES ---
+    //MÉTODO PARA CREAR EJEMPLARES ---
 
     // Añade un nuevo ejemplar a un libro existente
     @Transactional

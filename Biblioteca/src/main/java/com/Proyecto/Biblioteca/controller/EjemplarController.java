@@ -23,7 +23,7 @@ public class EjemplarController {
         this.libroRepository = libroRepository;
     }
 
-    // Endpoint para agregar un nuevo ejemplar a un libro
+    // para agregar un nuevo ejemplar a un libro
     @PostMapping
     public ResponseEntity<Ejemplar> agregarEjemplar(@RequestParam Long libroId) {
         return libroRepository.findById(libroId)
@@ -37,7 +37,7 @@ public class EjemplarController {
             .orElse(ResponseEntity.notFound().build());
     }
 
-    // Endpoint para obtener todos los ejemplares
+    // para obtener todos los ejemplares
     @GetMapping
     public List<Ejemplar> obtenerTodosLosEjemplares() {
         return ejemplarRepository.findAll();

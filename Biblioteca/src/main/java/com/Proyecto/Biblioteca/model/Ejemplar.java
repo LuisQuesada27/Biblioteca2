@@ -21,14 +21,14 @@ public class Ejemplar {
     @JoinColumn(name = "libro_id")
     private Libro libro;
 
-    // Usamos un enum para el estado para garantizar valores válidos
+    // enum para el estado para garantizar valores válidos
     @Enumerated(EnumType.STRING)
     private EstadoEjemplar estado;
     
     // Relación OneToMany con Prestamo
     @OneToMany(mappedBy = "ejemplar")
     @JsonIgnore
-    
+
     private List<Prestamo> prestamos;
     public Ejemplar(Libro libro, EstadoEjemplar estado) {
     this.libro = libro;

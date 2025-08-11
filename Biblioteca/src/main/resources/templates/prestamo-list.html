@@ -6,42 +6,47 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
     <div class="container mt-4">
         <h2>Préstamos Activos</h2>
         
         <a href="/prestamos/crear" class="btn btn-success mb-3">Registrar Nuevo Préstamo</a>
 
         <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Libro</th>
-                    <th>Ejemplar</th>
-                    <th>Usuario</th>
-                    <th>Fecha Préstamo</th>
-                    <th>Fecha Vencimiento</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="prestamo : ${prestamos}">
-                    <td th:text="${prestamo.ejemplar?.libro?.titulo}"></td>
-                    <td th:text="${prestamo.ejemplar?.id}"></td>
-                    <td th:text="${prestamo.usuario?.username}"></td>
-                    <td th:text="${#temporals.format(prestamo.fechaPrestamo, 'dd-MM-yyyy')}"></td>
-                    <td th:text="${#temporals.format(prestamo.fechaVencimiento, 'dd-MM-yyyy')}"></td>
-                    <td>
-                        <span th:if="${prestamo.fechaDevolucion == null}" class="badge badge-warning">Prestado</span>
-                        <span th:if="${prestamo.fechaDevolucion != null}" class="badge badge-success">Devuelto</span>
-                    </td>
-                    <td>
-                        <form th:if="${prestamo.fechaDevolucion == null}" th:action="@{/prestamos/devolver/{id}(id=${prestamo.id})}" method="post">
-                           <button type="submit" class="btn btn-info btn-sm">Devolver</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <thead>
+        <tr>
+            <th>Libro</th>
+            <th>Ejemplar</th>
+            <th>Usuario</th>
+            <th>Fecha Préstamo</th>
+            <th>Fecha Vencimiento</th>
+            <th>Estado</th>
+            <th>Devolver</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="prestamo : ${prestamos}">
+            <td th:text="${prestamo.ejemplar?.libro?.titulo}"></td>
+            <td th:text="${prestamo.ejemplar?.id}"></td>
+            <td th:text="${prestamo.usuario?.username}"></td>
+            <td th:text="${#temporals.format(prestamo.fechaPrestamo, 'dd-MM-yyyy')}"></td>
+            <td th:text="${#temporals.format(prestamo.fechaVencimiento, 'dd-MM-yyyy')}"></td>
+            <td>
+                <span th:if="${prestamo.fechaDevolucion == null}" class="badge badge-warning">Prestado</span>
+                <span th:if="${prestamo.fechaDevolucion != null}" class="badge badge-success">Devuelto</span>
+            </td>
+            <td>
+                <form th:if="${prestamo.fechaDevolucion == null}" th:action="@{/prestamos/devolver/{id}(id=${prestamo.id})}" method="post">
+                    <button type="submit" class="btn btn-info btn-sm">Devolver</button>
+                </form>
+            </td>
+            <td>
+                <a th:href="@{/prestamos/editar/{id}(id=${prestamo.id})}" class="btn btn-primary btn-sm">Editar</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
     </div>
 </body>
 </html>

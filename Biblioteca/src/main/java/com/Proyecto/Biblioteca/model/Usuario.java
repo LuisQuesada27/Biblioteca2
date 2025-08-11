@@ -15,7 +15,7 @@ public class Usuario {
     private String username;
 
     @Column(name = "password_hash", nullable = false)
-    private String password; // <-- CAMBIADO DE passwordHash a password
+    private String password; 
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -27,10 +27,8 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario")
     private List<Prestamo> prestamos;
 
-    // Constructor vacío (necesario para JPA)
     public Usuario() {
     }
-
     
     public Long getId() {
         return id;
@@ -48,7 +46,6 @@ public class Usuario {
         this.username = username;
     }
 
-    // Métodos para el campo 'password'
     public String getPassword() {
         return password;
     }
@@ -72,6 +69,5 @@ public class Usuario {
     public void setRol(Role rol) {
         this.rol = rol;
     }
-
     
 }

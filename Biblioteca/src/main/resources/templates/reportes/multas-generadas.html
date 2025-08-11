@@ -6,27 +6,45 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
     <div class="container mt-4">
         <h2>Reporte de Multas Generadas</h2>
 
-        <table class="table table-striped">
+        <div th:if="${multasGeneradas.isEmpty()}">
+            <p class="alert alert-info">No hay multas generadas o préstamos atrasados en este momento.</p>
+        </div>
+
+        <table class="table table-striped" th:unless="${multasGeneradas.isEmpty()}">
             <thead>
                 <tr>
-                    <th>Libro</th>
-                    <th>Usuario</th>
-                    <th>Fecha Devolución</th>
-                    <th>Multa Generada</th>
-                </tr>
+                  <th>Libro</th>
+                  <th>Usuario</th>
+                  <th>Fecha de Vencimiento</th>
+                  <th>Estado de la Multa</th>
+                  <th>Monto</th>
+                  <th>Acción</th> </tr>
             </thead>
             <tbody>
                 <tr th:each="prestamo : ${multasGeneradas}">
-                    <td th:text="${prestamo.ejemplar?.libro?.titulo}"></td>
-                    <td th:text="${prestamo.usuario?.username}"></td>
-                    <td th:if="${prestamo.fechaDevolucion != null}" th:text="${#temporals.format(prestamo.fechaDevolucion, 'dd-MM-yyyy')}"></td>
-                    <td th:if="${prestamo.fechaDevolucion == null}">-</td>
-                    <td th:text="${#numbers.formatCurrency(prestamo.multaGenerada)}"></td>
+                   <td th:text="${prestamo.ejemplar?.libro?.titulo}"></td>
+                   <td th:text="${prestamo.usuario?.username}"></td>
+                   <td th:text="${#temporals.format(prestamo.fechaVencimiento, 'dd-MM-yyyy')}"></td>
+                   
+                   <td th:if="${prestamo.multaGenerada != null && prestamo.multaGenerada > 0}">Generada</td>
+                  <td th:if="${prestamo.multaGenerada == null}">Pendiente</td>
+                   
+                   <td th:if="${prestamo.multaGenerada != null}" th:text="${#numbers.formatCurrency(prestamo.multaGenerada)}"></td>
+                   <td th:if="${prestamo.multaGenerada == null}" th:text="${#numbers.formatCurrency(#temporals.diff(prestamo.fechaVencimiento, T(java.time.LocalDate).now()).getDays() * 0.5)}"></td>
+                   
+                             <td>
+                        <form th:action="@{/prestamos/pagar-multa}" method="post">
+                            <input type="hidden" name="prestamoId" th:value="${prestamo.id}">
+                            <button type="submit" class="btn btn-success btn-sm">Pagar</button>
+                         </form>
+                   </td>
+                  
                 </tr>
-            </tbody>
+             </tbody>
         </table>
 
         <a href="/" class="btn btn-secondary">Volver al inicio</a>

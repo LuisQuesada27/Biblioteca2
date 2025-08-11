@@ -2,47 +2,81 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Crear Préstamo</title>
+    <title>Crear/Editar Préstamo</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 <body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
     <div class="container mt-4">
-        <h2>Crear Préstamo</h2>
+        <h2 th:text="${prestamo.id == null} ? 'Crear Préstamo' : 'Editar Préstamo'"></h2>
         <form th:action="@{/prestamos/guardar}" th:object="${prestamo}" method="post">
+            <input type="hidden" th:field="*{id}" />
             
-            <div class="form-group">
-                <label for="libro">Libro</label>
-                <select id="libro" class="form-control" required>
-                    <option value="">Seleccione un libro</option>
-                    <option th:each="libro : ${libros}" th:value="${libro.id}" th:text="${libro.titulo}"></option>
-                </select>
+            <div th:if="${prestamo.id == null}">
+                <div class="form-group">
+                    <label for="libro">Libro</label>
+                    <select id="libro" class="form-control" required th:field="*{ejemplar.libro.id}">
+                        <option value="">Seleccione un libro</option>
+                        <option th:each="libro : ${libros}" th:value="${libro.id}" th:text="${libro.titulo}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ejemplar">Ejemplar Disponible</label>
+                    <select id="ejemplar" th:field="*{ejemplar.id}" class="form-control" required>
+                        <option value="">Seleccione un ejemplar</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="usuario">Usuario</label>
+                    <select id="usuario" th:field="*{usuario.id}" class="form-control" required>
+                        <option value="">Seleccione un usuario</option>
+                        <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.username}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fechaPrestamo">Fecha de Préstamo</label>
+                    <input type="date" id="fechaPrestamo" th:field="*{fechaPrestamo}" class="form-control" required />
+                </div>
+            </div>
+
+            <div th:if="${prestamo.id != null}">
+                <div class="form-group">
+                    <label>Libro</label>
+                    <p th:text="${prestamo.ejemplar?.libro?.titulo}" class="form-control-plaintext"></p>
+                    <input type="hidden" th:field="*{ejemplar.libro.id}" />
+                </div>
+                <div class="form-group">
+                    <label>Ejemplar</label>
+                    <p th:text="'ID Ejemplar: ' + ${prestamo.ejemplar?.id}" class="form-control-plaintext"></p>
+                    <input type="hidden" th:field="*{ejemplar.id}" />
+                </div>
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <p th:text="${prestamo.usuario?.username}" class="form-control-plaintext"></p>
+                    <input type="hidden" th:field="*{usuario.id}" />
+                </div>
+                <div class="form-group">
+                    <label for="fechaPrestamo">Fecha de Préstamo</label>
+                    <input type="date" class="form-control" th:field="*{fechaPrestamo}"
+                        th:value="${#temporals.format(prestamo.fechaPrestamo, 'yyyy-MM-dd')}" />
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="ejemplar">Ejemplar Disponible</label>
-                <select id="ejemplar" th:field="*{ejemplar.id}" class="form-control" required>
-                    <option value="">Seleccione un ejemplar</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="usuario">Usuario</label>
-                <select id="usuario" th:field="*{usuario.id}" class="form-control" required>
-                    <option value="">Seleccione un usuario</option>
-                    <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.username}"></option>
-                </select>
+                <label for="fechaVencimiento">Fecha de Vencimiento</label>
+                <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control" required/>
             </div>
             
-            <button type="submit" class="btn btn-primary">Registrar Préstamo</button>
+            <button type="submit" class="btn btn-primary" th:text="${prestamo.id == null} ? 'Registrar Préstamo' : 'Actualizar Préstamo'"></button>
             <a href="/prestamos/listar" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
 
-    <script th:inline="javascript">
+    <script th:if="${prestamo.id == null}" th:inline="javascript">
     $(document).ready(function() {
-        $('#libro').change(function() {
-            var libroId = $(this).val();
+        function cargarEjemplares(libroId) {
             var ejemplarSelect = $('#ejemplar');
             ejemplarSelect.empty();
             ejemplarSelect.append($('<option>', {
@@ -51,12 +85,7 @@
             }));
 
             if (libroId) {
-                // Para depurar, ahora se mostrará en la consola si funciona
-                console.log("Haciendo llamada para el libro con ID:", libroId);
-                
                 $.get('/prestamos/ejemplares-disponibles/' + libroId, function(data) {
-                    console.log("Datos recibidos:", data); // Verás los datos aquí si la llamada tiene éxito
-                    
                     ejemplarSelect.empty();
                     ejemplarSelect.append($('<option>', {
                         value: '',
@@ -70,13 +99,12 @@
                             }));
                         });
                     } else {
-                         ejemplarSelect.append($('<option>', {
+                        ejemplarSelect.append($('<option>', {
                             value: '',
                             text: 'No hay ejemplares disponibles'
                         }));
                     }
                 }).fail(function() {
-                    console.error("Error al cargar ejemplares."); // Verás este error si la llamada falla
                     ejemplarSelect.empty();
                     ejemplarSelect.append($('<option>', {
                         value: '',
@@ -90,6 +118,10 @@
                     text: 'Seleccione un ejemplar'
                 }));
             }
+        }
+        $('#libro').change(function() {
+            var libroId = $(this).val();
+            cargarEjemplares(libroId);
         });
     });
     </script>

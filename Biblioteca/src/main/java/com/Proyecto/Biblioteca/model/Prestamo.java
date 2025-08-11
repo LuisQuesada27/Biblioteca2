@@ -30,8 +30,8 @@ public class Prestamo {
     public Prestamo(Usuario usuario, Ejemplar ejemplar) {
     this.usuario = usuario;
     this.ejemplar = ejemplar;
-    this.fechaPrestamo = LocalDate.now(); // Puedes inicializar la fecha aquí
-    this.fechaVencimiento = LocalDate.now().plusDays(15); // Y la fecha de vencimiento
+    this.fechaPrestamo = LocalDate.now(); // inicia fecha aquí
+    this.fechaVencimiento = LocalDate.now().plusDays(15); //fecha de vencimiento
     this.multaGenerada = 0.0;
     }
 }

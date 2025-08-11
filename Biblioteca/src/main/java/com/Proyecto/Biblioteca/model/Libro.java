@@ -80,11 +80,11 @@ public class Libro {
     public void setAutores(List<Autor> autores) {
         this.autores = autores;
     }
-    // Constructor vacío (necesario para JPA)
+   
     public Libro() {
     }
 
-    // **Añade este nuevo constructor**
+    
     public Libro(String titulo, Integer anioPublicacion, List<Autor> autores) {
     this.titulo = titulo;
     this.anioPublicacion = anioPublicacion;
