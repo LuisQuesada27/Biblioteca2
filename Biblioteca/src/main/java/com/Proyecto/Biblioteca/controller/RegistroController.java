@@ -3,6 +3,7 @@ package com.Proyecto.Biblioteca.controller;
 import com.Proyecto.Biblioteca.model.Usuario;
 import com.Proyecto.Biblioteca.repository.UsuarioRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // <-- IMPORTANTE
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +18,8 @@ public class RegistroController {
 
     private final UsuarioRepository usuarioRepository;
     private final BCryptPasswordEncoder passwordEncoder; 
- 
+    
+    @Autowired
     public RegistroController(UsuarioRepository usuarioRepository, BCryptPasswordEncoder passwordEncoder) {
     this.usuarioRepository = usuarioRepository;
     this.passwordEncoder = passwordEncoder;

@@ -216,10 +216,12 @@
                                 <i>🏷️</i> Categoría
                             </label>
                             <select id="categoria" th:field="*{categoria}" class="form-control" required>
-                                <option value="">Seleccione una categoría</option>
-                                <option th:each="categoria : ${categorias}" 
-                                        th:value="${categoria.id}" 
-                                        th:text="${categoria.nombre}"></option>
+                                 <option value="">-- Seleccione una categoría --</option>
+                                 <option th:each="categoria : ${categorias}"
+                                     th:value="${categoria.id}"
+                                     th:text="${categoria.nombre}"
+                                     th:selected="${libro.categoria != null and libro.categoria.id == categoria.id}">
+                                 </option>
                             </select>
                         </div>
                         

@@ -48,22 +48,39 @@ public class LibroController {
     }
 
     // Maneja la petición POST para guardar un libro
-    @PostMapping("/libros/crear")
-    public String guardarLibro(@ModelAttribute Libro libro, RedirectAttributes redirectAttributes) {
-        // Busca y asigna los autores y la categoría completos antes de guardar
-        if (libro.getAutores() != null) {
-            libro.setAutores(libro.getAutores().stream()
-                    .map(autor -> autorRepository.findById(autor.getId()).orElse(null))
-                    .collect(Collectors.toList()));
+@PostMapping("/libros/crear")
+public String guardarLibro(@ModelAttribute Libro libro, RedirectAttributes redirectAttributes) {
+    //Valida la categoría
+    if (libro.getCategoria() != null && libro.getCategoria().getId() != null) {
+        var categoriaOptional = categoriaRepository.findById(libro.getCategoria().getId());
+        if (categoriaOptional.isPresent()) {
+            libro.setCategoria(categoriaOptional.get());
+        } else {
+            // Si la categoría no existe, redirige de inmediato con un error
+            redirectAttributes.addFlashAttribute("error", "La categoría seleccionada no es válida.");
+            return "redirect:/libros/crear";
         }
-        if (libro.getCategoria() != null && libro.getCategoria().getId() != null) {
-            libro.setCategoria(categoriaRepository.findById(libro.getCategoria().getId()).orElse(null));
-        }
-
-        libroRepository.save(libro);
-        redirectAttributes.addFlashAttribute("mensaje", "Libro creado exitosamente.");
-        return "redirect:/libros";
+    } else {
+        redirectAttributes.addFlashAttribute("error", "Debe seleccionar una categoría para el libro.");
+        return "redirect:/libros/crear";
     }
+
+    //Valida y asigna los autores
+    if (libro.getAutores() != null && !libro.getAutores().isEmpty()) {
+        var autoresValidos = libro.getAutores().stream()
+                .map(autor -> autorRepository.findById(autor.getId()).orElse(null))
+                .collect(Collectors.toList());
+        if (autoresValidos.stream().anyMatch(autor -> autor == null)) {
+            redirectAttributes.addFlashAttribute("error", "Uno o más autores seleccionados no son válidos.");
+            return "redirect:/libros/crear";
+        }
+        libro.setAutores(autoresValidos);
+    }
+    
+    libroRepository.save(libro);
+    redirectAttributes.addFlashAttribute("mensaje", "Libro creado exitosamente.");
+    return "redirect:/libros";
+}
 
     // Muestra el formulario para editar un libro existente
     @GetMapping("/libros/editar/{id}")
@@ -79,22 +96,33 @@ public class LibroController {
 
     // Maneja la petición POST para actualizar un libro
     @PostMapping("/libros/actualizar/{id}")
-    public String actualizarLibro(@PathVariable("id") Long id, @ModelAttribute Libro libro) {
-        libro.setId(id);
+public String actualizarLibro(@PathVariable("id") Long id, @ModelAttribute Libro libro, RedirectAttributes redirectAttributes) {
+    libro.setId(id);
 
-        // Se asegura de buscar los objetos completos de Autor y Categoria antes de guardar
-        if (libro.getAutores() != null) {
-            libro.setAutores(libro.getAutores().stream()
-                    .map(autor -> autorRepository.findById(autor.getId()).orElse(null))
-                    .collect(Collectors.toList()));
-        }
-        if (libro.getCategoria() != null && libro.getCategoria().getId() != null) {
-            libro.setCategoria(categoriaRepository.findById(libro.getCategoria().getId()).orElse(null));
-        }
-
-        libroRepository.save(libro);
-        return "redirect:/libros";
+    //Valida la categoría
+    if (libro.getCategoria() != null && libro.getCategoria().getId() != null) {
+        libro.setCategoria(categoriaRepository.findById(libro.getCategoria().getId()).orElse(null));
     }
+    if (libro.getCategoria() == null) {
+        redirectAttributes.addFlashAttribute("error", "La categoría seleccionada no es válida.");
+        return "redirect:/libros/editar/" + id; // Redirige de vuelta al formulario de edición
+    }
+
+    // Valida y asigna los autores
+    if (libro.getAutores() != null && !libro.getAutores().isEmpty()) {
+        libro.setAutores(libro.getAutores().stream()
+                .map(autor -> autorRepository.findById(autor.getId()).orElse(null))
+                .collect(Collectors.toList()));
+        if (libro.getAutores().stream().anyMatch(autor -> autor == null)) {
+            redirectAttributes.addFlashAttribute("error", "Uno o más autores seleccionados no son válidos.");
+            return "redirect:/libros/editar/" + id; // Redirige de vuelta al formulario de edición
+        }
+    }
+    
+    libroRepository.save(libro);
+    redirectAttributes.addFlashAttribute("mensaje", "Libro actualizado exitosamente.");
+    return "redirect:/libros";
+}
 
     // Maneja la petición GET para eliminar un libro
     @GetMapping("/libros/eliminar/{id}")

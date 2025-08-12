@@ -3,6 +3,8 @@ package com.Proyecto.Biblioteca.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 public class Libro {
 
@@ -23,10 +25,11 @@ public class Libro {
 
     @ManyToMany
     @JoinTable(
-        name = "libro_autor", // Nombre de la tabla de unión
-        joinColumns = @JoinColumn(name = "libro_id"), // Columna que referencia a la tabla Libro
-        inverseJoinColumns = @JoinColumn(name = "autor_id") // Columna que referencia a la tabla Autor
+       name = "libro_autor",
+       joinColumns = @JoinColumn(name = "libro_id"),
+       inverseJoinColumns = @JoinColumn(name = "autor_id")
     )
+    @JsonManagedReference
     private List<Autor> autores;
 
     // Getters y Setters

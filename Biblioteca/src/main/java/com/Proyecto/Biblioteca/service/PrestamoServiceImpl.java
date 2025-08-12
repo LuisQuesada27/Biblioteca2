@@ -31,14 +31,10 @@ public class PrestamoServiceImpl implements PrestamoService {
         this.libroRepository = libroRepository;
     }
 
-
     @Override
     public List<Prestamo> obtenerTodosLosPrestamos() {
-    return prestamoRepository.findAll();
-    
+    return prestamoRepository.findAll();   
     }
-
-    
 
     @Override
     @Transactional
