@@ -33,7 +33,7 @@ public class PrestamoServiceImpl implements PrestamoService {
 
     @Override
     public List<Prestamo> obtenerTodosLosPrestamos() {
-    return prestamoRepository.findAll();   
+        return prestamoRepository.findAll();   
     }
 
     @Override
@@ -55,21 +55,17 @@ public class PrestamoServiceImpl implements PrestamoService {
         }
         
         Ejemplar ejemplar = prestamo.getEjemplar();
+        // Cuando se devuelve, el estado del ejemplar cambia a DISPONIBLE.
         ejemplar.setEstado(EstadoEjemplar.DISPONIBLE);
         ejemplarRepository.save(ejemplar);
 
         return prestamoRepository.save(prestamo);
     }
-
-        //método que devuelve préstamos con multa Y préstamos atrasados
-        public List<Prestamo> obtenerTodosLosPrestamosConMulta() {
-        // Obtiene los préstamos con multas ya generadas (cuando ya se devolvió el libro)
+    
+    public List<Prestamo> obtenerTodosLosPrestamosConMulta() {
         List<Prestamo> prestamosConMultaGenerada = prestamoRepository.findByMultaGeneradaGreaterThan(0.0);
-        
-        // Obtiene los préstamos que están atrasados pero no devueltos
         List<Prestamo> prestamosAtrasados = prestamoRepository.findByFechaVencimientoBeforeAndFechaDevolucionIsNull(LocalDate.now());
 
-        // Combina las dos listas y evita duplicados
         List<Prestamo> resultado = new ArrayList<>();
         resultado.addAll(prestamosConMultaGenerada);
         resultado.addAll(prestamosAtrasados.stream()
@@ -102,12 +98,12 @@ public class PrestamoServiceImpl implements PrestamoService {
 
     @Override
     public List<Prestamo> obtenerPrestamosAtrasados() {
-    return prestamoRepository.findByFechaVencimientoBeforeAndFechaDevolucionIsNull(LocalDate.now());
+        return prestamoRepository.findByFechaVencimientoBeforeAndFechaDevolucionIsNull(LocalDate.now());
     }
 
     @Override
     public List<Prestamo> obtenerPrestamosConMulta() {
-    return prestamoRepository.findByMultaGeneradaGreaterThan(0.0);
+        return prestamoRepository.findByMultaGeneradaGreaterThan(0.0);
     }
 
     @Override
@@ -127,17 +123,29 @@ public class PrestamoServiceImpl implements PrestamoService {
     }
 
     @Override
+    @Transactional
     public Prestamo guardarPrestamo(Prestamo prestamo) {
+        // Si el préstamo es nuevo, el ejemplar debe marcarse como PRESTADO.
+        if (prestamo.getId() == null) {
+            Ejemplar ejemplar = prestamo.getEjemplar();
+            if (ejemplar == null) {
+                 throw new IllegalStateException("El préstamo debe tener un ejemplar asociado.");
+            }
+            // *** CAMBIO CRÍTICO AQUÍ ***
+            // Usamos el valor PRESTADO del enum.
+            ejemplar.setEstado(EstadoEjemplar.PRESTADO);
+            ejemplarRepository.save(ejemplar);
+        }
+        
         return prestamoRepository.save(prestamo);
     }
 
     @Override
     public void pagarMulta(Long prestamoId) {
-    Prestamo prestamo = prestamoRepository.findById(prestamoId)
-        .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado"));
-    
-    // Asigna un valor de 0.0 para "limpiar" la multa. Esto asegura que ya no aparecerá en el reporte de multas pendientes.
-    prestamo.setMultaGenerada(0.0);
-    prestamoRepository.save(prestamo);
+        Prestamo prestamo = prestamoRepository.findById(prestamoId)
+            .orElseThrow(() -> new EntityNotFoundException("Préstamo no encontrado"));
+        
+        prestamo.setMultaGenerada(0.0);
+        prestamoRepository.save(prestamo);
     }
 }

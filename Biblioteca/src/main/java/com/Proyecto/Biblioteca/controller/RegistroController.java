@@ -32,17 +32,32 @@ public class RegistroController {
     return "registro";
     }
 
-    //procesa los datos enviados desde el formulario de registro
+    // Procesa los datos enviados desde el formulario de registro
     @PostMapping("/registro")
-    public String registrarUsuario(@ModelAttribute Usuario usuario, RedirectAttributes redirectAttributes) {
-    // Encriptar la contraseña antes de guardarla
-    usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+    public String registrarUsuario(@ModelAttribute Usuario usuario, RedirectAttributes redirectAttributes, Model model) {
 
-   
-    usuario.setRol(Role.USER);
+        // Verifica si el nombre de usuario ya existe
+        if (usuarioRepository.findByUsername(usuario.getUsername()).isPresent()) {
+            model.addAttribute("error", "El nombre de usuario ya está en uso.");
+            // Devuelve el objeto `usuario` al formulario para que los campos no se borren
+            model.addAttribute("usuario", usuario); 
+            return "registro";
+        }
+        
+        // Verifica si el correo electrónico ya existe
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            model.addAttribute("error", "El correo electrónico ya está registrado.");
+            // Devuelve el objeto `usuario` al formulario para que los campos no se borren
+            model.addAttribute("usuario", usuario);
+            return "registro";
+        }
 
-    usuarioRepository.save(usuario);
-    redirectAttributes.addFlashAttribute("mensaje", "Usuario registrado exitosamente. Por favor, inicia sesión.");
-    return "redirect:/login";
+        // Si no hay duplicados, encripta la contraseña y guarda el usuario
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        usuario.setRol(Role.USER);
+
+        usuarioRepository.save(usuario);
+        redirectAttributes.addFlashAttribute("mensaje", "Usuario registrado exitosamente. Por favor, inicia sesión.");
+        return "redirect:/login";
     }
 }

@@ -79,31 +79,21 @@ public class AdminUserSeeder implements CommandLineRunner {
     // Si no hay autores, los creamos
     if (autorRepository.count() == 0) {
         List<Autor> autores = new ArrayList<>();
-        
+
         Autor autor1 = new Autor();
-        autor1.setNombreCompleto("J.R.R. Tolkien");
-        autor1.setPaisOrigen("Sudáfrica");
+        autor1.setNombreCompleto("Isaac Asimov");
+        autor1.setPaisOrigen("Rusia");
         autores.add(autor1);
 
         Autor autor2 = new Autor();
-        autor2.setNombreCompleto("Isaac Asimov");
-        autor2.setPaisOrigen("Rusia");
+        autor2.setNombreCompleto("Stephen King");
+        autor2.setPaisOrigen("Estados Unidos");
         autores.add(autor2);
 
         Autor autor3 = new Autor();
-        autor3.setNombreCompleto("Stephen King");
-        autor3.setPaisOrigen("Estados Unidos");
+        autor3.setNombreCompleto("Jane Austen");
+        autor3.setPaisOrigen("Reino Unido");
         autores.add(autor3);
-
-        Autor autor4 = new Autor();
-        autor4.setNombreCompleto("Gabriel García Márquez");
-        autor4.setPaisOrigen("Colombia");
-        autores.add(autor4);
-
-        Autor autor5 = new Autor();
-        autor5.setNombreCompleto("Jane Austen");
-        autor5.setPaisOrigen("Reino Unido");
-        autores.add(autor5);
         
         autorRepository.saveAll(autores);
         System.out.println("Autores por defecto creados.");
@@ -148,10 +138,12 @@ public class AdminUserSeeder implements CommandLineRunner {
             // Crea Autores
             Autor autor1 = new Autor();
             autor1.setNombreCompleto("Gabriel García Márquez");
+            autor1.setPaisOrigen("Colombia");
             autorRepository.save(autor1);
             
             Autor autor2 = new Autor();
             autor2.setNombreCompleto("J.R.R. Tolkien");
+            autor2.setPaisOrigen("Sudáfrica");
             autorRepository.save(autor2);
 
             // Crea Libros 

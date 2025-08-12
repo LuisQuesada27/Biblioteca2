@@ -8,8 +8,7 @@ import com.Proyecto.Biblioteca.model.Usuario;
 import java.util.List;
 
 public interface PrestamoService {
-  
-    
+ 
     Prestamo devolverPrestamo(Long prestamoId);
     List<Prestamo> obtenerTodosLosPrestamos();
     List<Ejemplar> obtenerEjemplaresDisponibles(Long libroId);

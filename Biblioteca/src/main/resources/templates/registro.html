@@ -151,6 +151,10 @@
                         <h3>Registro de Usuario</h3>
                     </div>
                     <div class="card-body">
+                        <div th:if="${error}" class="alert alert-danger" role="alert">
+                            <p th:text="${error}"></p>
+                        </div>
+
                         <form th:action="@{/registro}" th:object="${usuario}" method="post">
                             <div class="form-group">
                                 <label for="username">

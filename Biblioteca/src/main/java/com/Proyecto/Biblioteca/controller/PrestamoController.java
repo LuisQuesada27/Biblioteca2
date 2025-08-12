@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -44,19 +45,33 @@ public class PrestamoController {
         return "prestamo-list";
     }
 
-    //Muestra el formulario para crear un nuevo préstamo
     @GetMapping("/crear")
     public String mostrarFormularioCreacion(Model model) {
-        model.addAttribute("prestamo", new Prestamo());
-        model.addAttribute("libros", prestamoService.obtenerTodosLosLibros());
-        model.addAttribute("usuarios", prestamoService.obtenerTodosLosUsuarios());
-        return "prestamo-form";
-    }
+    // 1. Crea un nuevo objeto Prestamo.
+    Prestamo nuevoPrestamo = new Prestamo();
+    // 2. Establece la fecha de préstamo como la fecha actual.
+    nuevoPrestamo.setFechaPrestamo(LocalDate.now());
+    // 3. Establece la fecha de vencimiento para 15 días después.
+    nuevoPrestamo.setFechaVencimiento(LocalDate.now().plusDays(15));
+    
+    model.addAttribute("prestamo", nuevoPrestamo);
+    model.addAttribute("libros", prestamoService.obtenerTodosLosLibros());
+    model.addAttribute("usuarios", prestamoService.obtenerTodosLosUsuarios());
+    return "prestamo-form";
+}
 
     // Guarda un nuevo préstamo o actualiza uno existente
     @PostMapping("/guardar")
     public String guardarPrestamo(@ModelAttribute Prestamo prestamo, RedirectAttributes redirectAttributes) {
         try {
+            // Se debe establecer la fecha de préstamo y vencimiento aquí
+            // solo si es un nuevo préstamo, porque los campos son de solo lectura
+            // y sus valores no son enviados desde el formulario.
+            if (prestamo.getId() == null) {
+                prestamo.setFechaPrestamo(LocalDate.now());
+                prestamo.setFechaVencimiento(LocalDate.now().plusDays(15));
+            }
+
             prestamoService.guardarPrestamo(prestamo);
             
             if (prestamo.getId() == null) {
@@ -66,8 +81,6 @@ public class PrestamoController {
             }
         } catch (IllegalStateException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            // Se puede redirigir con un modelo para preservar los datos del formulario si es necesario.
-            // Para mantenerlo simple, redirigimos al formulario de creación.
             return "redirect:/prestamos/crear";
         }
         return "redirect:/prestamos/listar";
