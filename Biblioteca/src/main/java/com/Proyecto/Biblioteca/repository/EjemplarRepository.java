@@ -10,4 +10,7 @@ import java.util.List;
 @Repository
 public interface EjemplarRepository extends JpaRepository<Ejemplar, Long> {
     List<Ejemplar> findByLibroIdAndEstado(Long libroId, EstadoEjemplar estado);
+
+    //Método para contar ejemplares por estado
+    long countByEstado(EstadoEjemplar estado);
 }

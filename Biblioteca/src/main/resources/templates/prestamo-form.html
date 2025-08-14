@@ -171,6 +171,10 @@
             <div class="form-icon" th:text="${prestamo.id == null} ? '📝' : '✏️'"></div>
             <h2 th:text="${prestamo.id == null} ? 'Crear Préstamo' : 'Editar Préstamo'"></h2>
             
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:text="${error}"></span>
+            </div>
+            
             <form th:action="@{/prestamos/guardar}" th:object="${prestamo}" method="post">
                 <input type="hidden" th:field="*{id}" />
                 
@@ -224,13 +228,13 @@
                 </div>
                 
                 <div class="form-group">
-                      <label for="fechaPrestamo"><i>📅</i> Fecha de Préstamo</label>                     
-                      <input type="date" id="fechaPrestamo" th:field="*{fechaPrestamo}" class="form-control" required readonly />              
-                      </div>
+                    <label for="fechaPrestamo"><i>📅</i> Fecha de Préstamo</label>
+                    <input type="date" id="fechaPrestamo" th:field="*{fechaPrestamo}" class="form-control" required readonly />
+                </div>
 
                 <div class="form-group">
                     <label for="fechaVencimiento"><i>⏳</i> Fecha de Vencimiento</label>
-                    <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control" required readonly />               
+                    <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control" required readonly />
                 </div>
                 
                 <div class="action-buttons">

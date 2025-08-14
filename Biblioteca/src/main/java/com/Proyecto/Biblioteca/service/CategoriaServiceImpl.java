@@ -25,6 +25,15 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     public Categoria guardarCategoria(Categoria categoria) {
+        // Buscar una categoría existente por nombre, ignorando mayúsculas/minúsculas
+        Categoria categoriaExistente = categoriaRepository.findByNombreIgnoreCase(categoria.getNombre());
+        
+        // Si se encontró una categoría con el mismo nombre y su ID es diferente al que estamos intentando guardar...
+        if (categoriaExistente != null && (categoria.getId() == null || !categoriaExistente.getId().equals(categoria.getId()))) {
+            throw new IllegalArgumentException("Ya existe una categoría con ese nombre.");
+        }
+        
+        // Si no hay duplicados, guarda el objeto.
         return categoriaRepository.save(categoria);
     }
 

@@ -8,11 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Fauna+One&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #5d4a36;  /* Café oscuro principal */
-            --secondary-color: #8b6b47;  /* Café medio */
-            --light-bg: #fffdf7;  /* Fondo claro beige */
-            --text-color: #3a3226;  /* Texto café oscuro */
-            --border-color: #d4c9b1;  /* Borde beige */
+            --primary-color: #5d4a36; 
+            --secondary-color: #8b6b47;
+            --light-bg: #fffdf7;
+            --text-color: #3a3226;
+            --border-color: #d4c9b1;
         }
         
         body {
@@ -169,6 +169,20 @@
                 <div class="category-icon" th:text="${categoria.id == null} ? '🏷️' : '✏️'"></div>
                 <h2 th:text="${categoria.id == null} ? 'Nueva Categoría' : 'Editar Categoría'"></h2>
                 
+                <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <p th:text="${mensaje}"></p>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <p th:text="${error}"></p>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
                 <form th:action="@{/categorias/guardar}" th:object="${categoria}" method="post">
                     <input type="hidden" th:field="*{id}" />
 

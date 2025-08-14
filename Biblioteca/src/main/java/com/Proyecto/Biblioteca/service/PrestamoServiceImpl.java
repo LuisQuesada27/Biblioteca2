@@ -125,14 +125,27 @@ public class PrestamoServiceImpl implements PrestamoService {
     @Override
     @Transactional
     public Prestamo guardarPrestamo(Prestamo prestamo) {
-        // Si el préstamo es nuevo, el ejemplar debe marcarse como PRESTADO.
         if (prestamo.getId() == null) {
+            
+            // VALIDACIÓN 1: Verificar si el usuario tiene multas generadas O préstamos atrasados
+            boolean tieneMultasPendientes = prestamoRepository.existsByUsuarioAndMultaGeneradaGreaterThan(prestamo.getUsuario(), 0.0);
+            boolean tienePrestamosAtrasados = prestamoRepository.existsByUsuarioAndFechaVencimientoBeforeAndFechaDevolucionIsNull(prestamo.getUsuario(), LocalDate.now());
+            
+            if (tieneMultasPendientes || tienePrestamosAtrasados) {
+                throw new IllegalArgumentException("El usuario tiene multas o préstamos atrasados pendientes y no puede tomar prestado un libro.");
+            }
+
+            // VALIDACIÓN 2: Verificar el límite de 2 libros prestados
+            long librosPrestados = prestamoRepository.countByUsuarioAndFechaDevolucionIsNull(prestamo.getUsuario());
+            if (librosPrestados >= 2) {
+                throw new IllegalArgumentException("El usuario ya tiene el máximo de 2 libros prestados.");
+            }
+
             Ejemplar ejemplar = prestamo.getEjemplar();
             if (ejemplar == null) {
-                 throw new IllegalStateException("El préstamo debe tener un ejemplar asociado.");
+                throw new IllegalStateException("El préstamo debe tener un ejemplar asociado.");
             }
-            // *** CAMBIO CRÍTICO AQUÍ ***
-            // Usamos el valor PRESTADO del enum.
+            
             ejemplar.setEstado(EstadoEjemplar.PRESTADO);
             ejemplarRepository.save(ejemplar);
         }

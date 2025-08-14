@@ -30,13 +30,13 @@
                 
                 <li class="nav-item dropdown" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link dropdown-toggle" id="navbarDropdownAdminReports" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Reportes Admin
+                       Reportes Admin
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownAdminReports">
-                        <a class="dropdown-item" th:href="@{/prestamos/reporte-atrasados}">Préstamos Atrasados</a>
-                        <a class="dropdown-item" th:href="@{/prestamos/reporte-multas}">Reporte de Multas</a>
-                        <div class="dropdown-divider"></div>
-                        
+                       <a class="dropdown-item" th:href="@{/prestamos/reporte-atrasados}">Préstamos Atrasados</a>
+                       <a class="dropdown-item" th:href="@{/prestamos/reporte-multas}">Reporte de Multas</a>
+                       <div class="dropdown-divider"></div>
+                       <a class="dropdown-item" th:href="@{/reportes/estadisticas}">Estadísticas de la Biblioteca</a>
                     </div>
                 </li>
 

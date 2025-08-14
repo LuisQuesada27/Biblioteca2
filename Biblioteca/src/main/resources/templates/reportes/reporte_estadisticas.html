@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reportes de la Biblioteca</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Fauna+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f1e6;
+            background-image: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: 'Fauna One', serif;
+            color: #3a3226;
+            min-height: 100vh;
+            padding-top: 60px;
+        }
+        
+        .container {
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+            padding-bottom: 3rem;
+        }
+        
+        .report-card {
+            background-color: rgba(255, 253, 247, 0.92);
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(58, 50, 38, 0.2);
+            padding: 3rem;
+            border-top: 8px solid #8b6b47;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+        }
+        
+        .report-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background-color: #5d4a36;
+            clip-path: polygon(0 0, 100% 0, 100% 100%);
+            opacity: 0.8;
+        }
+        
+        h1 {
+            color: #5d4a36;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        h2 {
+            color: #5d4a36;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #8b6b47;
+            padding-bottom: 0.5rem;
+        }
+        
+        .chart-container {
+            width: 100%;
+            margin-bottom: 40px;
+            padding: 30px;
+            background-color: rgba(255, 253, 247, 0.7);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(58, 50, 38, 0.1);
+            border-left: 4px solid #8b6b47;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(58, 50, 38, 0.15);
+        }
+        
+        .library-icon {
+            font-size: 2rem;
+            color: #8b6b47;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="report-card">
+                    <h1><span class="library-icon">📊</span>Estadísticas de la Biblioteca</h1>
+                    
+                    <div class="chart-container">
+                        <h2>Disponibilidad de Libros</h2>
+                        <canvas id="disponibilidadChart"></canvas>
+                    </div>
+
+                    <div class="chart-container">
+                        <h2>Libros más Prestados</h2>
+                        <canvas id="masPrestadosChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Función para obtener y graficar los datos de disponibilidad
+            async function fetchDisponibilidadData() {
+                try {
+                    const response = await fetch('/reportes/api/disponibilidad');
+                    const data = await response.json();
+                    
+                    const labels = ['Libros Prestados', 'Libros Disponibles'];
+                    const values = [data.prestados, data.disponibles];
+
+                    const ctx = document.getElementById('disponibilidadChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Cantidad de Libros',
+                                data: values,
+                                backgroundColor: [
+                                    'rgba(139, 107, 71, 0.6)',
+                                    'rgba(93, 74, 54, 0.6)'
+                                ],
+                                borderColor: [
+                                    'rgba(139, 107, 71, 1)',
+                                    'rgba(93, 74, 54, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        font: {
+                                            family: 'Fauna One',
+                                            size: 14
+                                        }
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Disponibilidad de Ejemplares',
+                                    font: {
+                                        family: 'Cinzel',
+                                        size: 16
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error al obtener datos de disponibilidad:', error);
+                }
+            }
+
+            // Función para obtener y graficar los libros más prestados
+            async function fetchMasPrestadosData() {
+                try {
+                    const response = await fetch('/reportes/api/mas-prestados');
+                    const data = await response.json();
+                    
+                    const labels = Object.keys(data);
+                    const values = Object.values(data);
+
+                    const ctx = document.getElementById('masPrestadosChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Veces Prestado',
+                                data: values,
+                                backgroundColor: 'rgba(139, 107, 71, 0.6)',
+                                borderColor: 'rgba(93, 74, 54, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Número de Préstamos',
+                                        font: {
+                                            family: 'Cinzel'
+                                        }
+                                    },
+                                    ticks: {
+                                        font: {
+                                            family: 'Fauna One'
+                                        }
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        font: {
+                                            family: 'Fauna One'
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false,
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Los 10 Libros más Prestados',
+                                    font: {
+                                        family: 'Cinzel',
+                                        size: 16
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error al obtener los libros más prestados:', error);
+                }
+            }
+
+            // Llama a las funciones para generar los gráficos cuando la página carga
+            fetchDisponibilidadData();
+            fetchMasPrestadosData();
+        });
+    </script>
+</body>
+</html>

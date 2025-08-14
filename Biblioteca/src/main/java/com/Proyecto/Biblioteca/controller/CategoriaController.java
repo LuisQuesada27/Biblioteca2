@@ -14,6 +14,7 @@ import java.util.List;
 @RequestMapping("/categorias")
 public class CategoriaController {
 
+    @Autowired
     private final CategoriaService categoriaService;
 
     @Autowired
@@ -35,10 +36,17 @@ public class CategoriaController {
     }
 
     @PostMapping("/guardar")
-    public String guardarCategoria(@ModelAttribute Categoria categoria, RedirectAttributes redirectAttributes) {
-        categoriaService.guardarCategoria(categoria);
-        redirectAttributes.addFlashAttribute("mensaje", "Categoría guardada exitosamente.");
-        return "redirect:/categorias/listar";
+    public String guardarCategoria(@ModelAttribute Categoria categoria, RedirectAttributes redirectAttributes, Model model) {
+        try {
+            categoriaService.guardarCategoria(categoria);
+            redirectAttributes.addFlashAttribute("mensaje", "Categoría guardada exitosamente.");
+            return "redirect:/categorias/listar";
+        } catch (IllegalArgumentException e) {
+            // Se envía el error y el objeto "categoria" al formulario
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("categoria", categoria);
+            return "categoria-form";
+        }
     }
 
     @GetMapping("/editar/{id}")

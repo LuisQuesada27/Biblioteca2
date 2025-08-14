@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
+    // Método que verifica la existencia de una categoría por su nombre
+    Categoria findByNombreIgnoreCase(String nombre);
 }
