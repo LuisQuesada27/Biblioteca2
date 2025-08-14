@@ -16,7 +16,7 @@
             color: #3a3226;
             min-height: 100vh;
         }
-        
+
         .library-container {
             background-color: rgba(255, 253, 247, 0.95);
             border-radius: 8px;
@@ -28,7 +28,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .library-container::before {
             content: "";
             position: absolute;
@@ -40,7 +40,7 @@
             clip-path: polygon(0 0, 100% 0, 100% 100%);
             opacity: 0.8;
         }
-        
+
         h1 {
             color: #5d4a36;
             font-family: 'Cinzel', serif;
@@ -53,7 +53,7 @@
             position: relative;
             padding-bottom: 15px;
         }
-        
+
         h1::after {
             content: "";
             position: absolute;
@@ -64,7 +64,7 @@
             height: 2px;
             background: linear-gradient(to right, transparent, #8b6b47, transparent);
         }
-        
+
         .table {
             border-collapse: separate;
             border-spacing: 0;
@@ -72,7 +72,7 @@
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(58, 50, 38, 0.1);
         }
-        
+
         .table thead th {
             background-color: #5d4a36;
             color: #fffdf7;
@@ -82,22 +82,22 @@
             padding: 15px;
             text-align: center;
         }
-        
+
         .table tbody td {
             background-color: #fffdf7;
             border-bottom: 1px solid #e8e0d0;
             padding: 12px 15px;
             vertical-align: middle;
         }
-        
+
         .table tbody tr:last-child td {
             border-bottom: none;
         }
-        
+
         .table tbody tr:hover td {
             background-color: #f0e9d9;
         }
-        
+
         .btn {
             border-radius: 4px;
             font-weight: 500;
@@ -106,69 +106,69 @@
             margin: 2px;
             font-family: 'Fauna One', serif;
         }
-        
+
         .btn-success {
             background-color: #4a6b3d;
             border-color: #4a6b3d;
         }
-        
+
         .btn-success:hover {
             background-color: #5d8a4d;
             border-color: #5d8a4d;
             transform: translateY(-2px);
         }
-        
+
         .btn-warning {
             background-color: #b38a58;
             border-color: #b38a58;
             color: #fff;
         }
-        
+
         .btn-warning:hover {
             background-color: #c99a6a;
             border-color: #c99a6a;
             transform: translateY(-2px);
         }
-        
+
         .btn-danger {
             background-color: #8b4a47;
             border-color: #8b4a47;
         }
-        
+
         .btn-danger:hover {
             background-color: #a05a57;
             border-color: #a05a57;
             transform: translateY(-2px);
         }
-        
+
         .btn-primary {
             background-color: #5d4a36;
             border-color: #5d4a36;
         }
-        
+
         .btn-primary:hover {
             background-color: #8b6b47;
             border-color: #8b6b47;
             transform: translateY(-2px);
         }
-        
+
         .btn-sm {
             padding: 5px 10px;
             font-size: 0.85rem;
         }
-        
+
         .book-icon {
             margin-right: 8px;
         }
-        
+
         .action-buttons {
             white-space: nowrap;
         }
-        
+
         .author-list {
             font-style: italic;
         }
-        
+
         .admin-actions {
             background-color: rgba(139, 107, 71, 0.05);
             padding: 15px;
@@ -199,6 +199,7 @@
                             <th>Autor(es)</th>
                             <th>Categoría</th>
                             <th>Año</th>
+                            <th>Ejemplares</th>
                             <th sec:authorize="hasRole('ADMIN')">Acciones</th>
                         </tr>
                     </thead>
@@ -209,18 +210,23 @@
                                 <strong th:text="${libro.titulo}"></strong>
                             </td>
                             <td class="author-list">
-                                <span th:each="autor, iterStat : ${libro.autores}">
-                                    <span th:text="${autor.nombreCompleto}"></span>
-                                    <span th:if="${!iterStat.last}">, </span>
+                                <span th:if="${libro.autores.empty}">N/A</span>
+                                <span th:unless="${libro.autores.empty}">
+                                    <span th:each="autor, iterStat : ${libro.autores}">
+                                        <span th:text="${autor.nombreCompleto}"></span>
+                                        <span th:if="${!iterStat.last}">, </span>
+                                    </span>
                                 </span>
                             </td>
-                            <td th:text="${libro.categoria?.nombre}"></td>
+                            <td th:text="${libro.categoria?.nombre != null ? libro.categoria.nombre : 'N/A'}"></td>
                             <td th:text="${libro.anioPublicacion}"></td>
+                            <td th:text="${libro.ejemplares?.size() != null ? libro.ejemplares.size() : 0}"></td>
                             <td sec:authorize="hasRole('ADMIN')" class="action-buttons">
                                 <a th:href="@{/libros/editar/{id}(id=${libro.id})}" class="btn btn-warning btn-sm">
                                     <span class="book-icon">✏️</span> Editar
                                 </a>
-                                <a th:href="@{/libros/eliminar/{id}(id=${libro.id})}" class="btn btn-danger btn-sm">
+                                <a th:href="@{/libros/eliminar/{id}(id=${libro.id})}" class="btn btn-danger btn-sm"
+                                   onclick="return confirm('¿Estás seguro de que deseas eliminar este libro?');">
                                     <span class="book-icon">🗑️</span> Eliminar
                                 </a>
                                 <a th:href="@{/libros/crear-ejemplar/{id}(id=${libro.id})}" class="btn btn-primary btn-sm">

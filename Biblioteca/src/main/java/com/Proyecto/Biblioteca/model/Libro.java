@@ -19,15 +19,14 @@ public class Libro {
     @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL)
     private List<Ejemplar> ejemplares;
 
-
     @ManyToOne
     private Categoria categoria;
 
     @ManyToMany
     @JoinTable(
-       name = "libro_autor",
-       joinColumns = @JoinColumn(name = "libro_id"),
-       inverseJoinColumns = @JoinColumn(name = "autor_id")
+        name = "libro_autor",
+        joinColumns = @JoinColumn(name = "libro_id"),
+        inverseJoinColumns = @JoinColumn(name = "autor_id")
     )
     @JsonManagedReference
     private List<Autor> autores;
@@ -88,16 +87,23 @@ public class Libro {
     public void setAutores(List<Autor> autores) {
         this.autores = autores;
     }
-   
+
+    // Nuevo getter para Ejemplares
+    public List<Ejemplar> getEjemplares() {
+        return ejemplares;
+    }
+
+    // Nuevo setter para Ejemplares
+    public void setEjemplares(List<Ejemplar> ejemplares) {
+        this.ejemplares = ejemplares;
+    }
+    
     public Libro() {
     }
 
-    
     public Libro(String titulo, Integer anioPublicacion, List<Autor> autores) {
-    this.titulo = titulo;
-    this.anioPublicacion = anioPublicacion;
-    this.autores = autores;
+        this.titulo = titulo;
+        this.anioPublicacion = anioPublicacion;
+        this.autores = autores;
     }
-
-    
 }

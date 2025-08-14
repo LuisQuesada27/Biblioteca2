@@ -229,12 +229,12 @@
                 
                 <div class="form-group">
                     <label for="fechaPrestamo"><i>📅</i> Fecha de Préstamo</label>
-                    <input type="date" id="fechaPrestamo" th:field="*{fechaPrestamo}" class="form-control" required readonly />
+                    <input type="date" id="fechaPrestamo" th:field="*{fechaPrestamo}" class="form-control" required th:readonly="${prestamo.id == null}" />
                 </div>
 
                 <div class="form-group">
                     <label for="fechaVencimiento"><i>⏳</i> Fecha de Vencimiento</label>
-                    <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control" required readonly />
+                    <input type="date" id="fechaVencimiento" th:field="*{fechaVencimiento}" class="form-control" required th:readonly="${prestamo.id == null}" />
                 </div>
                 
                 <div class="action-buttons">
