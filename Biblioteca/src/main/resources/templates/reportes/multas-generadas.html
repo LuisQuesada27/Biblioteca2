@@ -223,7 +223,7 @@
                                 <span th:if="${prestamo.multaGenerada != null}" 
                                       th:text="${'₡' + #numbers.formatDecimal(prestamo.multaGenerada, 1, 2)}"></span>
                                 <span th:if="${prestamo.multaGenerada == null}" 
-                                      th:text="${'₡' + #numbers.formatDecimal(T(java.time.temporal.ChronoUnit).DAYS.between(prestamo.fechaVencimiento, T(java.time.LocalDate).now()) * 1000, 1, 2)}"></span>  </td>
+                                      th:text="${'₡' + #numbers.formatDecimal(T(java.time.temporal.ChronoUnit).DAYS.between(prestamo.fechaVencimiento, T(java.time.LocalDate).now()) * 300, 1, 2)}"></span>  </td>
                             
                             <td class="action-cell">
                                 <form th:action="@{/prestamos/pagar-multa}" method="post" class="d-inline">

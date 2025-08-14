@@ -180,7 +180,7 @@ public class AdminUserSeeder implements CommandLineRunner {
             prestamoConMulta.setFechaVencimiento(LocalDate.now().minusDays(10));
             prestamoConMulta.setFechaDevolucion(LocalDate.now().minusDays(5));
             long diasAtraso = prestamoConMulta.getFechaVencimiento().until(prestamoConMulta.getFechaDevolucion()).getDays();
-            prestamoConMulta.setMultaGenerada(diasAtraso * 0.5);
+            prestamoConMulta.setMultaGenerada(diasAtraso * 300.00);
             prestamoRepository.save(prestamoConMulta);
         }
     }
